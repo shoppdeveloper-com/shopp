@@ -620,9 +620,7 @@ class ProductTaxonomy extends ProductCollection {
 		if (!$this->id) return false;
 
 		// If the term successfully saves, save all meta data too
-		foreach ($this->meta as $name => $Meta) {
-
-			if ( $name == $Meta->id ) continue;
+		foreach ($this->meta as $id => $Meta) {
 
 			if (is_a($Meta,'MetaObject')) {
 				$MetaObject = $Meta;
@@ -631,7 +629,6 @@ class ProductTaxonomy extends ProductCollection {
 				$MetaObject->populate($Meta);
 			}
 
-			$MetaObject->name = $name;
 			$MetaObject->parent = $this->id;
 			$MetaObject->context = 'category';
 			$MetaObject->save();
