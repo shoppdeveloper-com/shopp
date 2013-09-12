@@ -61,10 +61,10 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 		'isfacetfiltered' => 'is_facet_filtered',
 		'facetfilters' => 'facet_filters',
 		'facetfilter' => 'facet_filter',
+		'facetfilterlabel' => 'facet_filter_label',
 		'facetfiltered' => 'facet_filtered',
 		'facetmenus' => 'facet_menus',
 		'facetname' => 'facet_name',
-		'facetlabel' => 'facet_label',
 		'facetslug' => 'facet_slug',
 		'facetlink' => 'facet_link',
 		'facetmenuhasoptions' => 'facet_menu_has_options',
@@ -171,6 +171,12 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 		if (!isset($O->_filters_loop)) return false;
 		return ProductCategoryFacet::range_labels($O->facet->selected);
 	}
+	
+	public static function facet_filter_label ($result, $options, $O) {
+		if (isset($O->_filters_loop)) $facet = $O->facet;
+		else $facet = current($O->facets);
+		return $facet->filters[$facet->selected]->label;
+	}
 
 	static function facet_menus ($result, $options, $O) {
 		if (!isset($O->_facets_loop)) {
@@ -199,7 +205,8 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 	}
 
 	static function facet_slug ($result, $options, $O) {
-		$facet = current($O->facets);
+		if (isset($O->_filters_loop)) $facet = $O->facet;
+		else $facet = current($O->facets);
 		return $facet->slug;
 	}
 
@@ -641,5 +648,3 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 	}
 
 }
-
-?>
