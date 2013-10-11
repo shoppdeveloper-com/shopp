@@ -15,10 +15,28 @@
 
 class ShoppEmailDefaultFilters extends ShoppEmailFilters {
 
+	private static $object = false;
+
 	function __construct () {
+		add_filter('shopp_email_message', array('ShoppEmailDefaultFilters', 'FixSymbols'));
+		add_filter('shopp_email_message', array('ShoppEmailDefaultFilters', 'AutoMultipart'));
+		add_filter('shopp_email_message', array('ShoppEmailDefaultFilters', 'InlineStyles'), 99);
+		add_action('shopp_email_completed', array('ShoppEmailDefaultFilters', 'RemoveAutoMultipart'));
 		do_action('shopp_email_filters');
-		add_filter('shopp_email_message',array('ShoppEmailDefaultFilters','AutoMultipart'));
-		add_filter('shopp_email_message',array('ShoppEmailDefaultFilters','InlineStyles'),99);
+	}
+
+	/**
+	 * The singleton access method
+	 *
+	 * @author Jonathan Davis
+	 * @since
+	 *
+	 * @return
+	 **/
+	public static function init () {
+		if ( ! self::$object instanceof self )
+			self::$object = new self;
+		return self::$object;
 	}
 
 }
@@ -27,12 +45,12 @@ abstract class ShoppEmailFilters {
 
 	static function InlineStyles ($message) {
 
-		if ( false === strpos($message,'<html>') ) return $message;
+		if ( false === strpos($message, '<html') ) return $message;
 		$cssfile = locate_shopp_template(array('email.css'));
 		$stylesheet = file_get_contents($cssfile);
 
 		if (!empty($stylesheet)) {
-			$Emogrifier = new Emogrifier($message,$stylesheet);
+			$Emogrifier = new Emogrifier($message, $stylesheet);
 			$message = $Emogrifier->emogrify();
 		}
 
@@ -40,14 +58,30 @@ abstract class ShoppEmailFilters {
 
 	}
 
-	static function AutoMultipart ($message) {
-		add_action('phpmailer_init',array('ShoppEmailDefaultFilters','AltBody') );
+	static function AutoMultipart ( $message ) {
+		if ( false === strpos($message, '<html') ) return $message;
+		remove_action('phpmailer_init', array('ShoppEmailDefaultFilters', 'NoAltBody'));
+		add_action('phpmailer_init', array('ShoppEmailDefaultFilters', 'AltBody') );
 		return $message;
 	}
 
-	static function AltBody ($phpmailer) {
+	static function RemoveAutoMultipart () {
+		remove_action('phpmailer_init', array('ShoppEmailDefaultFilters', 'AltBody') );
+		add_action('phpmailer_init', array('ShoppEmailDefaultFilters', 'NoAltBody'));
+	}
+
+	static function AltBody ( $phpmailer ) {
 		$Textify = new Textify($phpmailer->Body);
 		$phpmailer->AltBody = $Textify->render();
+	}
+	
+	static function NoAltBody ( $phpmailer ) {
+		$phpmailer->AltBody = null;
+	}
+
+	static function FixSymbols ( $message ) {
+		$entities = htmlentities( $message, ENT_NOQUOTES  | ENT_DISALLOWED, 'UTF-8', false ); // Translate HTML entities (special symbols)
+		return htmlspecialchars_decode( $entities, ENT_NOQUOTES ); // Translate HTML tags back
 	}
 
 }
