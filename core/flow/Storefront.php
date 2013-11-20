@@ -96,6 +96,7 @@ class Storefront extends FlowController {
 		add_filter('search_template',array($this,'pages'));
 		add_filter('taxonomy_template',array($this,'pages'));
 		add_filter('page_template',array($this,'pages'));
+        add_filter('archive_template', array($this, 'pages'));
 		add_filter('single_template',array($this,'single'));
 
 	}

@@ -101,6 +101,9 @@ function Pricelines () {
 				_.row[key].linkInputs(option);
 			}
 		}
+		if (_.linked.length > _.variations.length) {
+			_.unlinkAll().linkAll();
+		}
 	};
 
 	_.unlinkVariations = function (option) {
@@ -133,6 +136,7 @@ function Pricelines () {
 	};
 
 	_.allLinked = function () {
+		console.log(_.linked.count);
 		if (_.linked[0]) return true;
 		return false;
 	};
