@@ -85,6 +85,8 @@ class ShoppCatalogThemeAPI implements ShoppAPI {
 	}
 
 	static function image ($result, $options, $O) {
+		if ( empty($O->images) ) return;
+
 		// Compatibility defaults
 		$_size = 96;
 		$_width = shopp_setting('gallery_thumbnail_width');
