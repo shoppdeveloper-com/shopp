@@ -911,5 +911,3 @@ class PorterStemmer {
     }
 
 } // END class PorterStemmer
-
-?>
