@@ -1,4 +1,9 @@
-<?php $error = false; $wpadmin = ShoppTMCELoader::load(); if ($wpadmin) require($wpadmin); ShoppTMCELoader::setup(); ?>
+<?php
+$error = false;
+$wpadmin = ShoppTMCELoader::load();
+if ( $wpadmin ) require( $wpadmin );
+ShoppTMCELoader::setup();
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -120,10 +125,9 @@ class ShoppTMCELoader {
 	}
 
 	static function setup () {
-		define('WPINC_URL',get_bloginfo('wpurl').'/'.WPINC);
-		define('TINYMCE_URL',WPINC_URL.'/js/tinymce/');
-		if(!current_user_can('edit_posts')) !($error = self::errors(3));
-		do_action('admin_init');
+		define( 'WPINC_URL', get_bloginfo( 'wpurl' ) . '/' . WPINC);
+		define( 'TINYMCE_URL', WPINC_URL . '/js/tinymce/' );
+		if ( ! current_user_can('edit_posts') ) exit();
 	}
 
 	static function errors ($code) {
