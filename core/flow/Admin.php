@@ -901,10 +901,9 @@ class AdminFlow extends FlowController {
 			if(!(in_array($pagenow, $pages) || (in_array($plugin_page, $editors) && !empty($_GET['id']))))
 				return false;
 
-			wp_enqueue_script('shopp-tinymce',admin_url('admin-ajax.php').'?action=shopp_tinymce',array());
-			wp_localize_script('shopp-tinymce', 'ShoppDialog', array(
-				'title' => __('Insert Product Category or Product', 'Shopp'),
-				'desc' => __('Insert a product or category from Shopp...', 'Shopp'),
+			wp_localize_script( 'editor', 'ShoppDialog', array(
+				'title' => __( 'Insert Product Category or Product', 'Shopp' ),
+				'desc' => __( 'Insert a product or category from Shopp...', 'Shopp' ),
 				'p' => $p
 			));
 
