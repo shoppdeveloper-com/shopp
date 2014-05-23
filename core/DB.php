@@ -1168,6 +1168,7 @@ abstract class SessionObject {
 			if (substr($result->data,0,1) == "!") {
 				$key = $_COOKIE[SHOPP_SECURE_KEY];
 				if (empty($key) && !is_ssl()) shopp_redirect(force_ssl(raw_request_url(),true));
+				$this->secured(true);
 				$readable = DB::query("SELECT AES_DECRYPT('".
 										mysql_real_escape_string(
 											base64_decode(
