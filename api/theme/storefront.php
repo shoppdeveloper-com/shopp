@@ -222,7 +222,7 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 		if ( ! $width ) $width = $_width;
 		if ( ! $height ) $height = $_height;
 
-		$lowest_quality = min(ImageSetting::$qualities);
+		$lowest_quality = min(ShoppImageSetting::$qualities);
 
 		$scale = $fit ? array_search( $fit, ImageAsset::$defaults['scaling'] ) : null;
 		$sharpen = $sharpen ? max( $sharpen, ImageAsset::$defaults['sharpen'] ) : null;
