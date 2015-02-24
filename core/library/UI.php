@@ -44,6 +44,8 @@ abstract class ShoppAdminMetabox extends ShoppRequestFormFramework {
 
 		add_meta_box($this->id, $this->title() . self::help($this->id), array($this, 'box'), $Screen->id, $context, $priority, $args);
 
+		$this->references();
+
 		// Parse query request
 		if ( $this->query() ) {
 			$this->actions();
@@ -57,7 +59,6 @@ abstract class ShoppAdminMetabox extends ShoppRequestFormFramework {
 			do_action('shopp_metabox_' . $this->id . '_ops');
 		}
 
-		$this->references();
 		$this->init();
 
 	}
