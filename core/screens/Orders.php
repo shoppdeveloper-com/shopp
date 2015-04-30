@@ -631,7 +631,7 @@ class ShoppOrdersTable extends ShoppAdminTable {
 class ShoppScreenOrderManager extends ShoppScreenController {
 
 	public function load() {
-		$id = (int) $_GET['id'];
+		$id = (int) $this->request('id');
 		if ( $id > 0 ) {
 			ShoppPurchase( new ShoppPurchase($id) );
 			ShoppPurchase()->load_purchased();
@@ -655,7 +655,7 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 		shopp_enqueue_script('selectize');
 
 		shopp_enqueue_script('orders');
-		shopp_custom_script('orders', 'var address = [], carriers = ' . json_encode($this->shipcarriers()) . ';');
+		shopp_custom_script('orders', 'var address = [], carriers = ' . json_encode(self::shipcarriers()) . ';');
 		shopp_localize_script( 'orders', '$om', array(
 			'co'     => Shopp::__('Cancel Order'),
 			'mr'     => Shopp::__('Mark Refunded'),
@@ -687,7 +687,7 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 
 		if ( ! $this->form('rmvline') ) return;
 
-		$Purchase = new ShoppPurchase($this->form('id'));
+		$Purchase = ShoppPurchase();
 		if ( ! $Purchase->exists() ) return;
 
 		$lineid = (int)$this->form('rmvline');
@@ -728,7 +728,7 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 
 		if ( false === $this->form('save-item') || false === $lineid = $this->form('lineid') ) return;
 
-		$Purchase = new ShoppPurchase($this->request('id'));
+		$Purchase = ShoppPurchase();
 		if ( ! $Purchase->exists() ) return;
 
 		$new = ( '' === $lineid );
@@ -806,7 +806,7 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 
 		if ( ! $this->form('save-totals') ) return;
 
-		$Purchase = new ShoppPurchase($this->form('id'));
+		$Purchase = ShoppPurchase();
 		if ( ! $Purchase->exists() ) return;
 
 		$totals = array();
@@ -864,7 +864,7 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 		$Purchase->save();
 	}
 
-	public function shipcarriers() {
+	public static function shipcarriers() {
 
 		$shipcarriers = ShoppLookup::shipcarriers(); // The full list of available shipping carriers
 		$selectcarriers = (array) shopp_setting('shipping_carriers'); // The store-preferred shipping carriers
@@ -885,6 +885,7 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 
 		$first = isset($carriers[ $default ]) ? $default : 'NOTRACKING';
 		return array($first => $carriers[ $first ]) + $carriers;
+
 	}
 
 	/**
@@ -1016,8 +1017,8 @@ class ShoppScreenOrderEntry extends ShoppScreenOrderManager {
 	}
 
 	public function ops () {
-		$ops = parent::ops();
-		array_unshift($ops, 'new_order');
+		ShoppPurchase()->save();
+		return parent::ops();
 	}
 
 	public function layout () {
@@ -1097,6 +1098,7 @@ class ShoppScreenOrderEntry extends ShoppScreenOrderManager {
 		$Purchase->Customer = new ShoppCustomer($Purchase->customer);
 		$Gateway = $Purchase->gateway();
 
+		/*
 		if ( ! empty($_POST['send-note']) ){
 			$user = wp_get_current_user();
 			shopp_add_order_event($Purchase->id,'note',array(
@@ -1461,7 +1463,7 @@ class ShoppScreenOrderEntry extends ShoppScreenOrderManager {
 
 			$Purchase->load_events();
 		}
-
+*/
 		$targets = shopp_setting('target_markets');
 		$default = array('' => '&nbsp;');
 		$Purchase->_countries = array_merge($default, ShoppLookup::countries());
@@ -1927,8 +1929,7 @@ class ShoppAdminOrderManageBox extends ShoppAdminMetabox {
 		$this->references['gateway_refunds'] = $Gateway ? $Gateway->refunds : false;
 		$this->references['gateway_captures'] = $Gateway ? $Gateway->captures : false;
 
-		// $carriers = $this->Screen->shipcarriers();
-		$carriers = array();
+		$carriers = ShoppScreenOrderManager::shipcarriers();
 		$menu = array();
 		foreach ( $carriers as $id => $entry )
 			$menu[ $id ] = $entry[0];
