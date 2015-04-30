@@ -2,7 +2,7 @@
 
 	<div class="icon32"></div>
 	<?php if ( ShoppPurchase()->id > 0 ): ?>
-		<h2><?php Shopp::_e('Order #%d', (int)$Purchase->id); ?> <a href="<?php echo esc_url(add_query_arg(array('page'=> $this->page(), 'id' => 'new'), admin_url('admin.php'))); ?>" class="add-new-h2"><?php Shopp::_e('Add New'); ?></a> </h2>
+		<h2><?php Shopp::_e('Order #%d', (int)$Purchase->id); ?> <a href="<?php echo esc_url($this->url(ShoppAdminOrders::entrypage())); ?>" class="add-new-h2"><?php Shopp::_e('Add New'); ?></a> </h2>
 	<?php else: ?>
 		<h2><?php Shopp::_e('New Order'); ?></h2>
 	<?php endif; ?>
@@ -12,8 +12,8 @@
 
 	<?php
 		$totalsedit = isset($_GET['edit']) && 'totals' == $_GET['edit'];
-		$columns = get_column_headers($this->screen);
-		$hidden = get_hidden_columns($this->screen);
+		$columns = get_column_headers($this->id);
+		$hidden = get_hidden_columns($this->id);
 		$colspan = count($columns);
 
 		$timestamp = empty($Purchase->created) ? current_time('timestamp') : $Purchase->created;
@@ -42,7 +42,7 @@
 		</div>
 
 		<div id="poststuff" class="poststuff">
-			<div class="meta-boxes">
+			<div class="meta-boxes clearfix">
 
 				<div id="topside" class="third-column first-third-column box-stretch">
 					<?php do_meta_boxes($this->screen, 'topside', $Purchase); ?>
@@ -58,7 +58,7 @@
 
 			<?php include $this->ui('editor.php'); ?>
 
-			<div class="meta-boxes">
+			<div class="meta-boxes clearfix">
 
 				<div id="underside" class="third-column first-third-column  box-stretch">
 					<?php do_meta_boxes($this->screen, 'underside', $Purchase); ?>

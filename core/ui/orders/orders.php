@@ -1,7 +1,7 @@
 <div class="wrap shopp orders">
 
 	<div class="icon32"></div>
-	<h2><?php Shopp::_e('Orders'); ?> <a href="<?php echo esc_url($this->url(array('id' => 'new'))); ?>" class="add-new-h2"><?php Shopp::_e('Add New'); ?></a>
+	<h2><?php Shopp::_e('Orders'); ?> <a href="<?php echo esc_url($this->url(ShoppAdminOrders::entrypage())); ?>" class="add-new-h2"><?php Shopp::_e('Add New'); ?></a>
 	<?php if ( current_user_can('shopp_financials') ): ?>
 		<span class="summary"><strong><?php echo Shopp::money($Table->ordercount->sales); ?></strong> <span><?php Shopp::_e('Total Sales'); ?></span>&nbsp;&nbsp;&nbsp;
 		<strong><?php echo Shopp::money($Table->ordercount->avgsale); ?></strong> <span><?php Shopp::_e('Average Sale'); ?></span></span>

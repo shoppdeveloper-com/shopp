@@ -69,6 +69,10 @@ class ShoppAdminOrders extends ShoppAdminController {
 		return $status;
 	}
 
+	public static function entrypage() {
+		return array('page' => ShoppAdmin::pagename('orders-new'));
+	}
+
 } // class ShoppAdminOrders
 
 /**
@@ -724,7 +728,7 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 
 		if ( false === $this->form('save-item') || false === $lineid = $this->form('lineid') ) return;
 
-		$Purchase = new ShoppPurchase($this->form('id'));
+		$Purchase = new ShoppPurchase($this->request('id'));
 		if ( ! $Purchase->exists() ) return;
 
 		$new = ( '' === $lineid );
@@ -1011,6 +1015,11 @@ class ShoppScreenOrderEntry extends ShoppScreenOrderManager {
 		return ShoppPurchase(new ShoppPurchase());
 	}
 
+	public function ops () {
+		$ops = parent::ops();
+		array_unshift($ops, 'new_order');
+	}
+
 	public function layout () {
 
 		$Purchase = ShoppPurchase();
@@ -1075,6 +1084,9 @@ class ShoppScreenOrderEntry extends ShoppScreenOrderManager {
 		);
 
 		do_action('shopp_order_new_layout');
+	}
+
+	public function new_order () {
 	}
 
 	function screen () {
@@ -1908,13 +1920,15 @@ class ShoppAdminOrderManageBox extends ShoppAdminMetabox {
 
 	public function references() {
 		$Purchase = $this->references['Purchase'];
+
 		$Gateway = $Purchase->gateway();
 
 		$this->references['gateway_name'] = $Gateway ? $Gateway->name : '';
 		$this->references['gateway_refunds'] = $Gateway ? $Gateway->refunds : false;
 		$this->references['gateway_captures'] = $Gateway ? $Gateway->captures : false;
 
-		$carriers = $this->Screen->shipcarriers();
+		// $carriers = $this->Screen->shipcarriers();
+		$carriers = array();
 		$menu = array();
 		foreach ( $carriers as $id => $entry )
 			$menu[ $id ] = $entry[0];

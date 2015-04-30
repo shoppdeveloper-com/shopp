@@ -2,7 +2,7 @@
 
 	<div class="icon32"></div>
 	<?php if ( ShoppPurchase()->id > 0 ): ?>
-		<h2><?php Shopp::_e('Order #%d', (int)$Purchase->id); ?> <a href="<?php echo esc_url($this->url(array('id' => 'new'))); ?>" class="add-new-h2"><?php Shopp::_e('Add New'); ?></a> </h2>
+		<h2><?php Shopp::_e('Order #%d', (int)$Purchase->id); ?> <a href="<?php echo esc_url($this->url(ShoppAdminOrders::entrypage())); ?>" class="add-new-h2"><?php Shopp::_e('Add New'); ?></a> </h2>
 	<?php else: ?>
 		<h2><?php Shopp::_e('New Order'); ?></h2>
 	<?php endif; ?>
@@ -71,10 +71,10 @@
 				<div id="underside" class="third-column first-third-column  box-stretch">
 					<?php do_meta_boxes($this->id, 'underside', $Purchase); ?>
 				</div>
-				<div id="underic" class="third-column  box-stretch">
+				<div id="underic" class="third-column box-stretch">
 					<?php do_meta_boxes($this->id, 'underic', $Purchase); ?>
 				</div>
-				<div id="undersider" class="third-column  box-stretch">
+				<div id="undersider" class="third-column box-stretch">
 					<?php do_meta_boxes($this->id, 'undersider', $Purchase); ?>
 				</div>
 
