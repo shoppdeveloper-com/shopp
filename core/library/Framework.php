@@ -430,9 +430,11 @@ class ShoppRequestProcessing {
 	public static function get ( $key = null, array $data = array() ) {
 
 		if ( isset($key) ) {
+
 			if ( isset($data[ $key ]) )
 				return $data[ $key ];
 			else return false;
+
 		}
 
 		return $data;
@@ -470,8 +472,7 @@ abstract class ShoppFormPostFramework {
 
 	protected $form = array();
 
-	protected function form ( $key = null, $latest = false ) {
-		if ( true === $latest ) $this->posted();
+	protected function form ( $key = null) {
 		return ShoppRequestProcessing::get($key, $this->form);
 	}
 

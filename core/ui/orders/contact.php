@@ -27,33 +27,33 @@ $page = substr($screen->id, strpos($screen->id, $pre) + strlen($pre));
 <?php echo ShoppUI::template( $search ); ?>
 
 <div class="editor ${action}">
-	<input type="hidden" name="order-action" value="${action}" id="customer-action" />
-	<input type="hidden" name="customer[customer]" value="${id}" id="customer-id" />
+	<input type="hidden" name="action" value="${action}" id="customer-action" form="order-updates" />
+	<input type="hidden" name="customer[customer]" value="${id}" id="customer-id" form="order-updates" />
 	<p class="inline-fields">
 		<span>
 		<label for="address-city"><?php _e('First Name','Shopp'); ?></label>
-		<input type="text" name="customer[firstname]" id="customer-firstname" value="${firstname}" /><br />
+		<input type="text" name="customer[firstname]" id="customer-firstname" value="${firstname}" form="order-updates" /><br />
 		</span><span>
 		<label for="address-city"><?php _e('Last Name','Shopp'); ?></label>
-		<input type="text" name="customer[lastname]" id="customer-lastname" value="${lastname}" /><br />
+		<input type="text" name="customer[lastname]" id="customer-lastname" value="${lastname}" form="order-updates" /><br />
 		</span>
 	</p>
 	<p>
 		<label for="address-address"><?php _e('Company','Shopp'); ?></label>
-		<input type="text" name="customer[company]" id="customer-company" value="${company}" /><br />
+		<input type="text" name="customer[company]" id="customer-company" value="${company}" form="order-updates" /><br />
 	</p>
 	<p>
 		<label for="customer-email"><?php _e('Email','Shopp'); ?></label>
-		<input type="text" name="customer[email]" id="customer-email" value="${email}" /><br />
+		<input type="text" name="customer[email]" id="customer-email" value="${email}" form="order-updates" /><br />
 	</p>
 	<p>
 		<label for="customer-phone"><?php _e('Phone','Shopp'); ?></label>
-		<input type="text" name="customer[phone]" id="customer-phone" value="${phone}" /><br />
+		<input type="text" name="customer[phone]" id="customer-phone" value="${phone}" form="order-updates" /><br />
 	</p>
 	<?php if ( 'wordpress' == shopp_setting('account_system') ): ?>
 	<p class="loginname">
 		<label for="customer-loginname"><?php _e('Login Name','Shopp'); ?></label>
-		<input type="text" name="customer[loginname]" id="customer-loginname" value="${loginname}" /><br />
+		<input type="text" name="customer[loginname]" id="customer-loginname" value="${loginname}" form="order-updates" /><br />
 	</p>
 	<?php endif; ?>
 	<div class="editing-controls">
@@ -70,14 +70,14 @@ $page = substr($screen->id, strpos($screen->id, $pre) + strlen($pre));
 		'${action}'    => 'update-customer',
 		'${id}'        => $Purchase->customer,
 		'${firstname}' => $Purchase->firstname,
-		'${lastname}' => $Purchase->lastname,
-		'${company}' => $Purchase->company,
-		'${email}' => $Purchase->email,
-		'${phone}' => $Purchase->phone,
-		'${login}' => 'wordpress' == shopp_setting('account_system')
+		'${lastname}'  => $Purchase->lastname,
+		'${company}'   => $Purchase->company,
+		'${email}'     => $Purchase->email,
+		'${phone}'     => $Purchase->phone,
+		'${login}'     => 'wordpress' == shopp_setting('account_system')
 	);
-	$js = preg_replace('/\${([-\w]+)}/','$1',json_encode($customer));
-	shopp_custom_script('orders','var customer = '.$js.';');
+	$js = preg_replace('/\${([-\w]+)}/', '$1', json_encode($customer));
+	shopp_custom_script('orders', 'var customer = ' . $js . ';');
 ?>
 </script>
 

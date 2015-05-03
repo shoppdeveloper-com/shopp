@@ -2496,6 +2496,7 @@ tfoot#order-totals td {
 
 #order-totals .subtotal td {
 	border-top: 1px solid #e1e1e1;
+	vertical-align: bottom;
 }
 
 #order-totals .label {

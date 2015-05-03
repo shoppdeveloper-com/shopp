@@ -354,6 +354,14 @@ class ShoppCustomer extends ShoppDatabaseObject {
 			unset($this->_confirm_password);
 	}
 
+	public function create() {
+		$this->password = wp_generate_password(12, true);
+		$this->save();
+
+		if ( 'wordpress' == shopp_setting('account_system') )
+			$this->create_wpuser();
+	}
+
 	/**
 	 * Create a new WordPress user associated with this customer
 	 *

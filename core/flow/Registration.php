@@ -86,6 +86,9 @@ class ShoppRegistration extends ShoppFormPostFramework {
 
 		$Customer = ShoppOrder()->Customer;
 
+		// Refresh the latest
+		$this->posted();
+
 		$updates = array(
 			'firstname' => $this->form('firstname'),
 			'lastname' => $this->form('lastname'),
@@ -94,8 +97,8 @@ class ShoppRegistration extends ShoppFormPostFramework {
 			'phone' => $this->form('phone'),
 			'info' => $this->form('info'),
 			'marketing' => $this->form('marketing'),
-			'password' => $this->form('password', true),
-			'loginname' => $this->form('loginname', true)
+			'password' => $this->form('password'),
+			'loginname' => $this->form('loginname')
 		);
 
 		// Remove invalid characters from the phone number
@@ -106,8 +109,11 @@ class ShoppRegistration extends ShoppFormPostFramework {
 
 		$Customer->updates($updates);
 
+		// Refresh the latest
+		$this->posted();
+
 		// Keep confirm-password field value when showing checkout validation errors
-		$confirmpass = $this->form('confirm-password', true);
+		$confirmpass = $this->form('confirm-password');
 		if ( ! empty($confirmpass) )
 			$Customer->_confirm_password = $confirmpass;
 

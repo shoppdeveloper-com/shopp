@@ -29,7 +29,7 @@ class ShoppAdminOrders extends ShoppAdminController {
 	 *
 	 * @return string The screen controller class in charge of the request
 	 **/
-	protected function route () {
+	protected function route() {
 		if ( false !== strpos($this->request('page'), 'orders-new') )
 			return 'ShoppScreenOrderEntry';
 		elseif ( ! empty($this->request('id') ) )
@@ -42,7 +42,7 @@ class ShoppAdminOrders extends ShoppAdminController {
 	 *
 	 * @return array|bool The list of order counts by status, or false
 	 **/
-	public static function status_counts () {
+	public static function status_counts() {
 		$table = ShoppDatabaseObject::tablename(ShoppPurchase::$table);
 		$labels = shopp_setting('order_status');
 
@@ -104,7 +104,7 @@ class ShoppScreenOrders extends ShoppScreenController {
 	 *
 	 * @return void
 	 **/
-	public function action () {
+	public function action() {
 		if ( false === $this->request('action') ) return;
 
 		$selected = (array) $this->request('selected');
@@ -143,7 +143,7 @@ class ShoppScreenOrders extends ShoppScreenController {
 	 * @param string $id The ShoppPurchase ID to delete.
 	 * @return bool True if deleted successfully, false otherwise.
 	 **/
-	public function delete ( $id ) {
+	public function delete( $id ) {
 
 		$Purchase = new ShoppPurchase($id);
 		if ( ! $Purchase->exists() ) return false;
@@ -163,7 +163,7 @@ class ShoppScreenOrders extends ShoppScreenController {
 	 * @param string $id The ShoppPurchase ID to update.
 	 * @return bool True if deleted successfully, false otherwise.
 	 **/
-	public function status ( $id ) {
+	public function status( $id ) {
 
 		$Purchase = new ShoppPurchase($id);
 		if ( ! $Purchase->exists() ) return false;
@@ -183,7 +183,7 @@ class ShoppScreenOrders extends ShoppScreenController {
 	 *
 	 * @return void
 	 **/
-	public function assets () {
+	public function assets() {
 		shopp_enqueue_script('calendar');
 		shopp_enqueue_script('daterange');
 		do_action('shopp_order_admin_scripts');
@@ -196,7 +196,7 @@ class ShoppScreenOrders extends ShoppScreenController {
 	 *
 	 * @return void
 	 **/
-	public function layout () {
+	public function layout() {
 		$this->table('ShoppOrdersTable');
 	}
 
@@ -207,10 +207,11 @@ class ShoppScreenOrders extends ShoppScreenController {
 	 *
 	 * @return void
 	 **/
-	public function screen () {
+	public function screen() {
 
 		$Orders = $this->orders;
 		$ordercount = $this->ordercount;
+		$per_page = 25; // @todo make this configurable
 		$num_pages = ceil($ordercount->total / $per_page);
 
 		$Table = $this->table();
@@ -226,7 +227,7 @@ class ShoppScreenOrders extends ShoppScreenController {
 	 *
 	 * @return void
 	 **/
-	private function retotal ( ShoppPurchase $Purchase ) {
+	private function retotal( ShoppPurchase $Purchase ) {
 		$Cart = new ShoppCart();
 
 		$taxcountry = $Purchase->country;
@@ -249,7 +250,7 @@ class ShoppScreenOrders extends ShoppScreenController {
 		$Purchase->freight = $Cart->total('shipping');
 	}
 
-	public static function navigation () {
+	public static function navigation() {
 
 		$labels = shopp_setting('order_status');
 
@@ -897,7 +898,7 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 	 *
 	 * @return
 	 **/
-	public function layout () {
+	public function layout() {
 
 		$Purchase = ShoppPurchase();
 
@@ -952,13 +953,6 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 		$Purchase = ShoppPurchase();
 		$Purchase->Customer = new ShoppCustomer($Purchase->customer);
 		$Gateway = $Purchase->gateway();
-
-
-
-
-
-
-
 
 		// $targets = shopp_setting('target_markets');
 		// $default = array('' => '&nbsp;');
@@ -1026,63 +1020,28 @@ class ShoppScreenOrderEntry extends ShoppScreenOrderManager {
 		$Purchase = ShoppPurchase();
 
 		ShoppUI::register_column_headers($this->id, apply_filters('shopp_order_manager_columns',array(
-			'items' => __('Items','Shopp'),
-			'qty' => __('Quantity','Shopp'),
-			'price' => __('Price','Shopp'),
-			'total' => __('Total','Shopp')
+			'items' => Shopp::__('Items'),
+			'qty'   => Shopp::__('Quantity'),
+			'price' => Shopp::__('Price'),
+			'total' => Shopp::__('Total')
 		)));
 
-		new ShoppAdminOrderContactBox(
-			$this->id,
-			'topside',
-			'core',
-			array('Purchase' => $Purchase)
-		);
+		new ShoppAdminOrderContactBox($this, 'topside', 'core', array('Purchase' => $Purchase));
 
-		new ShoppAdminOrderBillingAddressBox(
-			$this->id,
-			'topic',
-			'core',
-			array('Purchase' => $Purchase)
-		);
+		new ShoppAdminOrderBillingAddressBox($this, 'topic', 'core', array('Purchase' => $Purchase));
 
 
-		new ShoppAdminOrderShippingAddressBox(
-			$this->id,
-			'topsider',
-			'core',
-			array('Purchase' => $Purchase)
-		);
+		new ShoppAdminOrderShippingAddressBox($this, 'topsider', 'core', array('Purchase' => $Purchase));
 
-		new ShoppAdminOrderManageBox(
-			$this->id,
-			'normal',
-			'core',
-			array('Purchase' => $Purchase, 'Gateway' => $Purchase->gateway())
-		);
+		new ShoppAdminOrderManageBox($this, 'normal', 'core', array('Purchase' => $Purchase, 'Gateway' => $Purchase->gateway()));
 
 		if ( isset($Purchase->data) && '' != join('', (array)$Purchase->data) || apply_filters('shopp_orderui_show_orderdata', false) )
-			new ShoppAdminOrderDataBox(
-				$this->id,
-				'normal',
-				'core',
-				array('Purchase' => $Purchase)
-			);
+			new ShoppAdminOrderDataBox($this, 'normal', 'core', array('Purchase' => $Purchase));
 
 		if ( count($Purchase->events) > 0 )
-			new ShoppAdminOrderHistoryBox(
-				$this->id,
-				'normal',
-				'core',
-				array('Purchase' => $Purchase)
-			);
+			new ShoppAdminOrderHistoryBox($this, 'normal', 'core', array('Purchase' => $Purchase));
 
-		new ShoppAdminOrderNotesBox(
-			$this->id,
-			'normal',
-			'core',
-			array('Purchase' => $Purchase)
-		);
+		new ShoppAdminOrderNotesBox($this, 'normal', 'core', array('Purchase' => $Purchase));
 
 		do_action('shopp_order_new_layout');
 	}
@@ -1672,82 +1631,106 @@ class ShoppAdminOrderContactBox extends ShoppAdminMetabox {
 	protected function ops() {
 		return array(
 			'updates',
-			'reassign',
-			'add',
-			'unedit'
+			// 'reassign',
+			// 'add',
+			// 'unedit'
 		);
 	}
 
-	public function updates() {
+	// public function updates() {
+	//
+	// 	if ( 'update-customer' != $this->form('action') ) return;
+	// 	if ( ! $updates = $this->form('customer') ) return;
+	// 	if ( ! is_array($updates) ) return;
+	//
+	// 	extract($this->references, EXTR_SKIP);
+	// 	$Purchase->updates($updates);
+	// 	$Purchase->save();
+	// }
+	//
+	// public function reassign() {
+	// 	if ( 'change-customer' != $this->form('action') ) return;
+	//
+	// 	$Customer = new ShoppCustomer((int)$this->request('customerid'));
+	// 	if ( ! $Customer->exists() )
+	// 		return $this->notice(Shopp::__('The selected customer was not found.'), 'error');
+	//
+	// 	extract($this->references, EXTR_SKIP);
+	//
+	// 	$Purchase->copydata($Customer);
+	// 	$Purchase->customer = $Customer->id;
+	// 	$Purchase->save();
+	// }
+	//
+	// public function add() {
+	//
+	// 	if ( 'new-customer' != $this->form('action') ) return;
+	// 	if ( ! $updates = $this->form('customer') ) return;
+	// 	if ( ! is_array($updates) ) return;
+	//
+	// 	extract($this->references, EXTR_SKIP);
+	//
+	// 	// Create the new customer record
+	// 	$Customer = new ShoppCustomer();
+	// 	$Customer->updates($updates);
+	// 	$Customer->password = wp_generate_password(12, true);
+	//
+	// 	if ( 'wordpress' == shopp_setting('account_system') )
+	// 		$Customer->create_wpuser();
+	// 	else unset($this->form['loginname']);
+	//
+	// 	$Customer->save();
+	//
+	// 	if ( ! $Customer->exists() )
+	// 		return $this->notice(Shopp::__('An unknown error occured. The customer could not be created.'), 'error');
+	//
+	// 	$Purchase->customer = $Customer->id;
+	// 	$Purchase->copydata($Customer);
+	// 	$Purchase->save();
+	//
+	// 	// Create a new billing address record for the new customer
+	// 	if ( $billing = $this->form('billing') && is_array($billing) && empty($billing['id']) ) {
+	// 		$Billing = new BillingAddress($billing);
+	// 		$Billing->customer = $Customer->id;
+	// 		$Billing->save();
+	// 	}
+	//
+	// 	// Create a new shipping address record for the new customer
+	// 	if ( $shipping = $this->form('shipping') && is_array($shipping) && empty($shipping['id']) ) {
+	// 		$Shipping = new ShippingAddress($shipping);
+	// 		$Shipping->customer = $Customer->id;
+	// 		$Shipping->save();
+	// 	}
+	//
+	// }
 
-		if ( 'update-customer' != $this->form('order-action') ) return;
+	public function updates () {
+
 		if ( ! $updates = $this->form('customer') ) return;
-		if ( ! is_array($updates) ) return;
 
-		extract($this->references, EXTR_SKIP);
-		$Purchase->updates($updates);
-		$Purchase->save();
-	}
+		$updates = $this->form('customer');
+		$new = ( '' == (string) $updates['customer'] );
 
-
-	public function reassign() {
-		if ( 'change-customer' != $this->form('order-action') ) return;
-
-		$Customer = new ShoppCustomer((int)$this->request('customerid'));
-		if ( ! $Customer->exists() )
-			return $this->notice(Shopp::__('The selected customer was not found.'), 'error');
-
-		extract($this->references, EXTR_SKIP);
-
-		$Purchase->copydata($Customer);
-		$Purchase->customer = $Customer->id;
-		$Purchase->save();
-	}
-
-	public function add() {
-		if ( 'new-customer' != $this->form('order-action') ) return;
-		if ( ! $updates = $this->form('customer') ) return;
-		if ( ! is_array($updates) ) return;
-
-		extract($this->references, EXTR_SKIP);
-
-		// Create the new customer record
-		$Customer = new ShoppCustomer();
+		$Customer = new ShoppCustomer($updates['customer']);
 		$Customer->updates($updates);
-		$Customer->password = wp_generate_password(12, true);
 
-		if ( 'wordpress' == shopp_setting('account_system') )
-			$Customer->create_wpuser();
-		else unset($this->form['loginname']);
+		if ( $new ) $Customer->create();
 
-		$Customer->save();
+		if ( ! $Customer->exists(true) ) // Exception when no customer exists or was created
+			return $this->notice(Shopp::__('An unknown error occured. The customer information could not be saved.'), 'error');
 
-		if ( ! $Customer->exists() )
-			return $this->notice(Shopp::__('An unknown error occured. The customer could not be created.'), 'error');
-
+		// Everything went through, update peripheral records
+		$Purchase = ShoppPurchase();
 		$Purchase->customer = $Customer->id;
 		$Purchase->copydata($Customer);
 		$Purchase->save();
 
-		// Create a new billing address record for the new customer
-		if ( $billing = $this->form('billing') && is_array($billing) && empty($billing['id']) ) {
-			$Billing = new BillingAddress($billing);
-			$Billing->customer = $Customer->id;
-			$Billing->save();
-		}
-
-		// Create a new shipping address record for the new customer
-		if ( $shipping = $this->form('shipping') && is_array($shipping) && empty($shipping['id']) ) {
-			$Shipping = new ShippingAddress($shipping);
-			$Shipping->customer = $Customer->id;
-			$Shipping->save();
-		}
-
 	}
+
 
 	public function unedit() {
 		if ( ! $this->form('cancel-edit-customer') ) return;
-		unset($this->form['order-action'], $this->form['edit-customer'], $this->form['select-customer']);
+		unset($this->form['action'], $this->form['edit-customer'], $this->form['select-customer']);
 	}
 
 
@@ -1974,7 +1957,7 @@ class ShoppAdminOrderManageBox extends ShoppAdminMetabox {
 	}
 
 	public function refund() {
-		if ( 'refund' != $this->form('order-action') ) return;
+		if ( 'refund' != $this->form('action') ) return;
 
 		if ( ! current_user_can('shopp_refund') )
 			wp_die(Shopp::__('You do not have sufficient permissions to carry out this action.'));
@@ -2031,7 +2014,7 @@ class ShoppAdminOrderManageBox extends ShoppAdminMetabox {
 	}
 
 	public function cancel () {
-		if ( 'cancel' != $this->form('order-action') ) return;
+		if ( 'cancel' != $this->form('action') ) return;
 
 		if ( ! current_user_can('shopp_void') )
 			wp_die(Shopp::__('You do not have sufficient permissions to carry out this action.'));
