@@ -814,22 +814,21 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 		if ( ! empty($this->form('totals')) )
 			$totals = $this->form('totals');
 
-		$objects = array(
-			'tax' => 'OrderAmountTax',
-			'shipping' => 'OrderAmountShipping',
-			'discount' => 'OrderAmountDiscount'
-		);
-
-		$methods = array(
-			'fee' => 'fees',
-			'tax' => 'taxes',
-			'shipping' => 'shipfees',
-			'discount' => 'discounts'
+		$map = array(         // amount object, method, property
+			'fee'      => array('OrderAmountFee', 'fees', 'fees'),
+			'tax'      => array('OrderAmountTax', 'taxes', 'tax'),
+			'shipping' => array('OrderAmountShipping', 'shipfees', 'freight'),
+			'discount' => array('OrderAmountDiscount', 'discounts', 'discount'),
 		);
 
 		$total = 0;
 		foreach ( $totals as $property => $fields ) {
 			if ( empty($fields) ) continue;
+
+			if ( 'total' == $property ) continue;
+
+			if ( ! isset($map[ $property ]) ) $property = 'fee';
+			list($OrderAmountObject, $savemethod, $column) = $map[ $property ];
 
 			if ( count($fields) > 1 ) {
 				if ( isset($fields['labels']) ) {
@@ -844,25 +843,26 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 				$fields = array_map(array('Shopp', 'floatval'), $fields);
 
 				$entries = array();
-				$OrderAmountObject = isset($objects[ $property ]) ? $objects[ $property ] : 'OrderAmountFee';
 				foreach ( $fields as $label => $amount )
 					$entries[] = new $OrderAmountObject(array('id' => count($entries) + 1, 'label' => $label, 'amount' => $amount));
 
-				$savetotal = isset($methods[ $property ]) ? $methods[ $property ] : $fees;
-				$Purchase->$savetotal($entries);
+				$Purchase->$savemethod($entries); // Save totals meta
 
 				$sum = array_sum($fields);
 				if ( $sum > 0 )
-					$Purchase->$property = $sum;
+					$Purchase->$column = $sum;
 
-			} else $Purchase->$property = Shopp::floatval($fields[0]);
+			} else $sum = Shopp::floatval($fields[0]);
 
-			$total += ('discount' == $property ? $Purchase->$property * -1 : $Purchase->$property );
+			$Purchase->$column = $sum;
+
+			$total += ( 'discount' == $column ? $Purchase->$column * -1 : $Purchase->$column );
 
 		}
 
 		$Purchase->total = $Purchase->subtotal + $total;
 		$Purchase->save();
+
 	}
 
 	public static function shipcarriers() {
