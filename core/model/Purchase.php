@@ -155,24 +155,13 @@ class ShoppPurchase extends ShoppDatabaseObject {
 	 * @return array List of discounts applied
 	 **/
 	public function discounts ( $ShoppDiscounts = null ) {
-		if ( is_a($ShoppDiscounts, 'ShoppDiscounts') )
-			return $this->linefees($ShoppDiscounts, 'discounts', 'ShoppPurchaseDiscount');
-		else return $this->linefees($ShoppDiscounts, 'discounts', 'ShoppPurchaseOrderDiscount');
 
-		// if ( empty($this->id) ) return false;
-		//
-		// if ( isset($ShoppDiscounts) ) { // Save the given discounts
-		// 	$discounts = array();
-		// 	foreach ( $ShoppDiscounts as $Discount )
-		// 		$discounts[ $Discount->id() ] = new ShoppPurchaseDiscount($Discount);
-		//
-		// 	shopp_set_meta($this->id, 'purchase', 'discounts', $discounts);
-		// 	$this->discounts = $discounts;
-		// 	ShoppPromo::used(array_keys($discounts));
-		// }
-		//
-		// if ( empty($this->discounts) ) $this->discounts = shopp_meta($this->id, 'purchase', 'discounts');
-		// return $this->discounts;
+		$DiscountTypeClass = is_a($ShoppDiscounts, 'ShoppDiscounts') ? 'ShoppPurchaseDiscount' : 'ShoppPurchaseOrderDiscount';
+		$discounts = $this->linefees($ShoppDiscounts, 'discounts', $DiscountTypeClass);
+
+		ShoppPromo::used(array_keys($discounts));
+		return $this->discounts;
+
 	}
 
 	/**
@@ -185,29 +174,43 @@ class ShoppPurchase extends ShoppDatabaseObject {
 	 **/
 	public function taxes ( array $OrderTaxes = array() ) {
 		return $this->linefees($OrderTaxes, 'taxes', 'ShoppPurchaseTax');
-		// if ( empty($this->id) ) return false;
-		//
-		// if ( ! empty($OrderTaxes) ) { // Save the given taxes
-		// 	$taxes = array();
-		// 	foreach ( (array) $OrderTaxes as $Tax )
-		// 		$taxes[ $Tax->id() ] = new ShoppPurchaseTax($Tax);
-		// 	shopp_set_meta($this->id, 'purchase', 'taxes', $taxes);
-		// 	$this->taxes = $taxes;
-		// }
-		//
-		// if ( empty($this->taxes) ) $this->taxes = shopp_meta($this->id, 'purchase', 'taxes');
-		// return $this->taxes;
 	}
 
 
+	/**
+	 * Set or load the shipping fees applied to this order
+	 *
+	 * @since 1.4
+	 *
+	 * @param array $OrderTaxes A list of OrderAmountShipping entries
+	 * @return array The list of shipping fees applied to the order
+	 **/
 	public function shipfees ( array $OrderShipping = array() ) {
 		return $this->linefees($OrderShipping, 'shipfees', 'ShoppPurchaseShipping');
 	}
 
+	/**
+	 * Set or load the order fees applied to this order
+	 *
+	 * @since 1.4
+	 *
+	 * @param array $OrderTaxes A list of OrderAmountFee entries
+	 * @return array The list of fees applied to the order
+	 **/
 	public function fees ( array $OrderFees = array() ) {
 		return $this->linefees($OrderFees);
 	}
 
+	/**
+	 * Save or load the fee records in meta
+	 *
+	 * @since 1.4
+	 *
+	 * @param array $list A list of entries to save
+	 * @param string $property The ShoppPurchase model property to load or save
+	 * @param string $class The class name of the ShoppPurchaseFee record model associated with the property
+	 * @return array The list of shipping fees applied to the order
+	 **/
 	private function linefees ( $list = array(), $property = 'orderfees', $class = 'ShoppPurchaseFee' ) {
 		if ( empty($this->id) ) return false;
 
