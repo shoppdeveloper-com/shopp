@@ -179,7 +179,7 @@ jQuery(document).ready( function($) {
 						display.show();
 					});
 				},
-				saveCustomerAddresses = function () {
+				saveCustomerAddresses = function () { // @todo Add for="" attributes to form inputs instead?
 					var types = ['billing','shipping'];
 					$('#customer-editor-form, #billing-address-editor, #shipping-address-editor').on('submit', function (e) {
 						e.preventDefault();
@@ -239,8 +239,15 @@ jQuery(document).ready( function($) {
 
 							$.each(fields, function (i, field) {
 								$.each(types, function (t, type) {
-									if ( undefined != r[type][field] && $('#' + type + '-' + field).length > 0 )
-										$('#' + type + '-' + field).val(r[type][field]);
+									var input = $('#' + type + '-' + field);
+									console.log(type + " " + field + ": " + r[type][field]);
+
+									if ( undefined != r[type][field] && input.length > 0 )
+										input.val(r[type][field]);
+
+									if ( input.hasClass('selectized') )
+										input[0].selectize.setValue(r[type][field]);
+
 						});
 							});
 
@@ -311,11 +318,18 @@ jQuery(document).ready( function($) {
 			editcustomer(e, ui);
 		});
 
-		if ( $('#order-contact .editor').length == 1 ) {
+
+		// Init contact editor
+		if ( $('#order-contact .editor').length == 1 )
 			editcustomer(false, $('#order-contact .inside'));
+
+		// Init billing address editor
+		if ( $('#billing-address-editor .editor').length == 1 )
 			editaddress('billing');
+
+		// Init shipping address editor
+		if ( $('#shipping-address-editor .editor').length == 1 )
 			editaddress('shipping');
-		}
 
 		// close postboxes that should be closed
 		$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
