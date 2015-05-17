@@ -2,19 +2,19 @@
 /**
  * Service.php
  *
- * Flow controller for order management interfaces
+ * Flow control for the order management screens
  *
- * @author Jonathan Davis
- * @version 1.0
- * @copyright Ingenesis Limited, January 6, 2010
- * @package shopp
- * @subpackage shopp
+ * @copyright Ingenesis Limited, January, 2010-2015
+ * @license   GNU GPL version 3 (or later) {@see license.txt}
+ * @package   Shopp/Admin/Orders
+ * @version   1.0
+ * @since     1.4
  **/
 
 defined( 'WPINC' ) || header( 'HTTP/1.1 403' ) & exit; // Prevent direct access
 
 /**
- * Shopp order admin controller
+ * Shopp order admin flow controller
  *
  * @since 1.4
  **/
@@ -295,7 +295,6 @@ class ShoppScreenOrders extends ShoppScreenController {
  * Images Table UI renderer
  *
  * @since 1.4
- * @package Shopp/Admin/Settings
  **/
 class ShoppOrdersTable extends ShoppAdminTable {
 
@@ -678,13 +677,13 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 
 	public function ops() {
 		return array(
-			'remove_item',
-			'save_item',
-			'save_totals',
+			'rmvitem',
+			'items',
+			'totals',
 		);
 	}
 
-	public function remove_item() {
+	public function rmvitem() {
 
 		if ( ! $this->form('rmvline') ) return;
 
@@ -725,9 +724,9 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 
 	}
 
-	public function save_item() {
+	public function items() {
 
-		if ( false === $this->form('save-item') || false === $lineid = $this->form('lineid') ) return;
+		if ( false === $lineid = $this->form('lineitem') ) return;
 
 		$Purchase = ShoppPurchase();
 		if ( ! $Purchase->exists() ) return;
@@ -803,16 +802,14 @@ class ShoppScreenOrderManager extends ShoppScreenController {
 
 	}
 
-	public function save_totals() {
+	public function totals() {
 
-		if ( ! $this->form('save-totals') ) return;
+		if ( ! $this->form('totals') ) return;
 
 		$Purchase = ShoppPurchase();
 		if ( ! $Purchase->exists() ) return;
 
-		$totals = array();
-		if ( ! empty($this->form('totals')) )
-			$totals = $this->form('totals');
+		$totals = $this->form('totals');
 
 		$map = array(         // amount object, method, property
 			'fee'      => array('OrderAmountFee', 'fees', 'fees'),
@@ -1044,9 +1041,6 @@ class ShoppScreenOrderEntry extends ShoppScreenOrderManager {
 		new ShoppAdminOrderNotesBox($this, 'normal', 'core', array('Purchase' => $Purchase));
 
 		do_action('shopp_order_new_layout');
-	}
-
-	public function new_order () {
 	}
 
 	function screen () {

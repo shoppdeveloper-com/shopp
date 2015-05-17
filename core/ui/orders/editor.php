@@ -18,7 +18,7 @@
 					<input type="text" name="itemname" value="${itemname}" size="40" id="edit-item" tabindex="1" /><button class="shoppui-th-list choose-product" title="<?php Shopp::__('Select product&hellip;'); ?>" tabindex="2"><?php Shopp::__('Select product&hellip;'); ?></button>
 					<input type="hidden" name="id" value="${id}" />
 							<div class="controls">
-							<input type="hidden" name="lineid" value="${lineid}"/>
+							<input type="hidden" name="lineitem" value="${lineitem}"/>
 					<input type="submit" name="cancel-edit-item" value="<?php _e('Cancel','Shopp'); ?>" class="button-secondary" tabindex="6" />
 							</div>
 							</td>
@@ -40,9 +40,9 @@
 						$classes[] = 'money';
 						?>
 						<td class="<?php echo esc_attr(join(' ',$classes)); ?>">
-					<input type="text" name="total" value="${totalprice}" size="10" class="money focus-edit" id="edit-total" />
+							<input type="text" name="total" value="${totalprice}" size="10" class="money focus-edit" id="edit-total" />
 							<div class="controls">
-					<input type="submit" name="save-item" value="<?php _e('Save Changes','Shopp'); ?>" class="button-primary alignright" tabindex="5" />
+								<input type="submit" name="save" value="<?php _e('Save Changes','Shopp'); ?>" class="button-primary alignright" tabindex="5" />
 							</div>
 						</td>
 						<?php
@@ -197,7 +197,7 @@
 			<?php
 				if ( $editing ) {
 					$data = array(
-						'${lineid}'     => (int)$_GET['editline'],
+						'${lineitem}'   => (int)$_GET['editline'],
 						'${itemname}'   => $itemname,
 						'${quantity}'   => $Item->quantity,
 						'${unitprice}'  => money($Item->unitprice),
