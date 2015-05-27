@@ -1,7 +1,7 @@
 <div itemscope itemtype="http://schema.org/Product">
 
 	<meta itemprop="name" content="<?php shopp('product.name'); ?>" />
-	<meta itemprop="description" content="<?php shopp('product.summary'); ?>" />
+	<meta itemprop="description" content="<?php echo htmlspecialchars(strip_tags(shopp('product.get-summary'))); ?>" />
 	<meta itemprop="image" content="<?php shopp('product.coverimage', 'property=url&size=original'); ?>" />
 
 	<?php if ( shopp('product.has-variations') ): ?>
