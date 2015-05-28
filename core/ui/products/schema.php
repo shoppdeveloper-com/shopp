@@ -23,7 +23,7 @@
 
 		<div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 			<?php while( shopp('product','categories') ): ?>
-				<meta itemprop="category" content="<?php echo str_replace('"', '&quot;', shopp('product','category')); ?>" />
+				<meta itemprop="category" content="<?php echo str_replace('"', '&quot;', shopp('product','get-category')); ?>" />
 			<?php endwhile; ?>
 			<meta itemprop="price" content="<?php shopp('product.saleprice'); ?>" />
 			<meta itemprop="priceCurrency" content="<?php shopp('storefront.currency'); ?>" />
