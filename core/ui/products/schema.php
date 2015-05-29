@@ -27,9 +27,7 @@
 			<?php endwhile; ?>
 			<meta itemprop="price" content="<?php shopp('product.saleprice'); ?>" />
 			<meta itemprop="priceCurrency" content="<?php shopp('storefront.currency'); ?>" />
-			<?php if(shopp('product','in-category','id=106')): ?>
-				<link itemprop="availability" href="http://schema.org/Discontinued" />
-			<?php elseif ( shopp('product.get-outofstock') ): ?>
+			<?php if ( shopp('product.get-outofstock') ): ?>
 				<link itemprop="availability" href="http://schema.org/OutOfStock" />
 			<?php else: ?>
 				<link itemprop="availability" href="http://schema.org/InStock" />
