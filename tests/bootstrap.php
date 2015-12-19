@@ -14,8 +14,9 @@ define('WP_MEMORY_LIMIT', -1);
 define('WP_MAX_MEMORY_LIMIT', -1);
 
 // Ensure PHPUnit can read error messages properly
-ini_set('display_errors', 'On');
-error_reporting(E_ALL);
+ini_set('error_reporting', E_ALL); // or error_reporting(E_ALL);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
 
 // Vars we explicitly need to globalize (else they will not be placed in the global scope during testing)
 global $table_prefix, $wp_embed, $wp_locale, $_wp_deprecated_widgets_callbacks, $wp_widget_factory,
