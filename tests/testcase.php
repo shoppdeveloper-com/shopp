@@ -33,7 +33,11 @@ class ShoppTestCase extends WP_UnitTestCase {
 	}
 
 	function setUp() {
-		ini_set('display_errors', 1 );
+		// Ensure PHPUnit can read error messages properly
+		ini_set('error_reporting', E_ALL); // or error_reporting(E_ALL);
+		ini_set('display_errors', '1');
+		ini_set('display_startup_errors', '1');
+
 		// $this->factory = new WP_UnitTest_Factory;
 		// $this->clean_up_global_scope();
 		// $this->start_transaction();
