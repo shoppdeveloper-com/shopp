@@ -622,6 +622,10 @@ abstract class ShoppCore {
 
 		if ($unit == $from) return $value;
 
+		// If we don't know about unit, return 0.
+		if ( ! isset($table[$chart][$from]) ) return 0;
+		if ( ! isset($table[$chart][$unit]) ) return 0;
+
 		$siv = $value * $table[$chart][$from];	// Convert to SI unit value
 		return $siv/$table[$chart][$unit];		// Return target units
 	}
@@ -1669,7 +1673,7 @@ abstract class ShoppCore {
 				$f['decimals'] = substr($format, $de);
 		} else {
 			$currency = substr($format, $de);
-			if ( in_array($currency{0}, $decimals) ) {
+			if ( isset($currency{0}) && in_array($currency{0}, $decimals) ) {
 				$f['decimals'] = $currency{0};
 				$f['currency'] = substr($currency, 1);
 			} else {
