@@ -903,7 +903,7 @@ class ShoppCheckoutThemeAPI implements ShoppAPI {
 			$defaults['rows'] = '3';
 		}
 		$op = array_merge($defaults, $options);
-		extract($op, $EXTR_SKIP);
+		extract($op, EXTR_SKIP);
 
 		// Allowed input types
 		$allowed_types = array('text', 'hidden', 'password', 'checkbox', 'radio', 'textarea', 'menu');
