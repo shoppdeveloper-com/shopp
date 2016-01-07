@@ -480,6 +480,42 @@ abstract class ShoppCore {
 	}
 
 	/**
+	 * Recursively computes the difference of arrays.
+	 *
+	 * This is a version of array_diff() that supports multidimensional arrays.
+	 *
+	 * @author Clifton H. Griffin II
+	 * @since 1.4.0
+	 * @see: http://stackoverflow.com/a/29526501/334457
+	 *
+	 * @param array $arr1 The array to compare from
+	 * @param array $arr2 An array to compare against
+	 * @return array Returns an array containing all the values from array1 that are not present in array2
+	 **/
+	public static function array_diff_recursive($arr1, $arr2) {
+	    $outputDiff = array();
+
+	    foreach ( $arr1 as $key => $value ) {
+	        if ( array_key_exists($key, $arr2) ) {
+	            if ( is_array($value) ) {
+	                $recursiveDiff = array_diff_recursive($value, $arr2[$key]);
+
+	                if ( count($recursiveDiff) ) {
+	                    $outputDiff[$key] = $recursiveDiff;
+	                }
+	            }
+	            else if ( ! in_array($value, $arr2) ) {
+	                $outputDiff[$key] = $value;
+	            }
+	        } else if ( ! in_array($value, $arr2) ) {
+	            $outputDiff[$key] = $value;
+	        }
+	    }
+
+	    return $outputDiff;
+	}
+
+	/**
 	 * Recursively searches a nested array and returns the matching key
 	 *
 	 * @author Jonathan Davis

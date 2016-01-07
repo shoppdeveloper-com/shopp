@@ -550,7 +550,7 @@ abstract class ShippingFramework {
 				$rule['postcode'] = $rate['postcode'];
 			$match = array_intersect_key($target, $rule);
 
-			$d = array_diff($rule, $match);
+			$d = ShoppCore::array_diff_recursive($rule, $match);
 
 			// Use the rate if the destination rule is for anywhere
 			if ( '*' == $rule['region'] ) return $r;
