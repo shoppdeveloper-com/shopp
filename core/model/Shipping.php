@@ -507,7 +507,7 @@ abstract class ShippingFramework {
 		$target = array('region' => false, 'country' => false, 'area' => false, 'zone' => false, 'postcode' => false);
 
 		// Prepare address for comparison
-		$target['region'] = ShoppLookup::region($Address->country, int);
+		$target['region'] = ShoppLookup::region($Address->country, intval($Address->region));
 		$target['country'] = $Address->country;
 
 		if ( isset($Address->postcode) && ! empty($Address->postcode) ) {
