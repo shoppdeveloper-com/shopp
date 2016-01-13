@@ -1197,20 +1197,27 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 	 * @return string The collection URL
 	 **/
 	public static function url ( $result, $options, $O ) {
-        $taxonomy = get_taxonomy($O->taxonomy);
+		$taxonomy = get_taxonomy($O->taxonomy);
 
-        if ( $taxonomy ) {
-            $url = get_term_link($O);
-        } else {
-            global $wp_rewrite;
-        	$slug = $O->slug;
-        	$termlink = $wp_rewrite->get_extra_permastruct($O->taxonomy);
-    		$termlink = str_replace("%$O->taxonomy%", $slug, $termlink);
-            $url = home_url( user_trailingslashit($termlink, 'category') );
-        }
+		if ( $taxonomy ) {
+			$url = get_term_link($O);
+		} else {
+			global $wp_rewrite;
+			$slug = $O->slug;
+			$termlink = $wp_rewrite->get_extra_permastruct($O->taxonomy);
+			if ( empty($termlink) ) {
+				if ( isset($O->query_var) )
+					$termlink = "?$O->query_var=$slug";
+				else $termlink = "?taxonomy=$O->taxonomy&term=$slug";
+				$url = home_url($termlink);
+			} else {
+				$termlink = str_replace("%$O->taxonomy%", $slug, $termlink);
+				$url = home_url( user_trailingslashit($termlink, 'category') );
+			}
+		}
 
-        if ( isset($options['page']) )
-            $url = $O->pagelink((int)$options['page']);
+		if ( isset($options['page']) )
+			$url = $O->pagelink((int)$options['page']);
 
 		return $url;
 	}

@@ -664,7 +664,7 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 			$Collection->taxonomy = get_class_property('SmartCollection','taxon');
 			$Collection->description = '';
 			$Collection->parent = 0;
-			$Collection->query_var = $Collection->taxonomy;
+            $Collection->query_var = ''; //$Collection->taxonomy;
 			$collections[] = $Collection;
 		}
 
@@ -1727,10 +1727,9 @@ class ShoppCategoryWalker extends Walker {
 		extract($args);
 
 		$smartcollection = $category->taxonomy == get_class_property( 'SmartCollection', 'taxon');
-
 		$categoryname = $category->name;
 
-		$href = get_term_link($category);
+        $href = shopp($category, 'get-url');
 
 		$classes = '';
 		if ( 'list' == $args['style'] ) {
