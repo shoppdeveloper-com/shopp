@@ -550,7 +550,11 @@ abstract class ShippingFramework {
 				$rule['postcode'] = $rate['postcode'];
 			$match = array_intersect_key($target, $rule);
 
-			$d = ShoppCore::array_diff_recursive($rule, $match);
+            // Find any differences between the rule and potential match target
+            // The potential match can have an array of country areas, 
+            // so we suppress datatype conversion warnings and match areas separately
+            // in the special case below.
+			$d = @array_diff($rule, $match);
 
 			// Use the rate if the destination rule is for anywhere
 			if ( '*' == $rule['region'] ) return $r;
