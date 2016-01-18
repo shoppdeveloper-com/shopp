@@ -159,8 +159,8 @@ class ShoppTestCase extends WP_UnitTestCase {
 	 * @return bool
 	 */
 	private static function tagMatch( $matcher, $actual, $isHtml = true ) {
-		$dom = PHPUnit_Util_XML::load( $actual, $isHtml );
-		$tags = PHPUnit_Util_XML::findNodes( $dom, $matcher, $isHtml );
+		$dom = Shopp_Tests_Util_XML::load( $actual, $isHtml );
+		$tags = Shopp_Tests_Util_XML::findNodes( $dom, $matcher, $isHtml );
 		return count( $tags ) > 0 && $tags[0] instanceof DOMNode;
 	}
 
@@ -176,8 +176,6 @@ class ShoppTestCase extends WP_UnitTestCase {
 	 * @param bool $isHtml
 	 */
 	public static function assertTag( $matcher, $actual, $message = '', $isHtml = true ) {
-        return true;
-        // trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		self::assertTrue( self::tagMatch( $matcher, $actual, $isHtml ), $message );
 	}
 
@@ -191,8 +189,6 @@ class ShoppTestCase extends WP_UnitTestCase {
 	 * @param bool $isHtml
 	 */
 	public static function assertNotTag( $matcher, $actual, $message = '', $isHtml = true ) {
-        return true;
-        // trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		self::assertFalse( self::tagMatch( $matcher, $actual, $isHtml ), $message );
 	}
 
