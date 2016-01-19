@@ -216,7 +216,7 @@ class ShoppInstallation extends ShoppFlowController {
 		foreach ($tests as $testquery) {
 			$db = sDB::get();
 			sDB::query($testquery);
-			$error = mysql_error($db->dbh);
+			$error = mysqli_error($db->dbh);
 			if (!empty($error)) $this->error('dbprivileges');
 		}
 
@@ -507,6 +507,7 @@ class ShoppInstallation extends ShoppFlowController {
 		sDB::query("INSERT INTO $meta_table (parent, context, type, name, value, numeral, sortorder, created, modified)
 							SELECT parent, context, 'image', 'processing', CONCAT_WS('::', id, name, value, size, properties, LENGTH(data)), '0', sortorder, created, modified FROM $asset_table WHERE datatype='image'");
 		$records = sDB::query("SELECT id, value FROM $meta_table WHERE type='image' AND name='processing'", 'array');
+
 		foreach ($records as $r) {
 			list($src, $name, $value, $size, $properties, $datasize) = explode("::", $r->value);
 			$p = unserialize($properties);
@@ -526,7 +527,8 @@ class ShoppInstallation extends ShoppFlowController {
 				$value->storage = "FSStorage";
 				$value->uri = $name;
 			}
-			$value = mysql_real_escape_string(serialize($value));
+
+			$value = mysqli_real_escape_string(sDB::get()->dbh, serialize($value));
 			sDB::query("UPDATE $meta_table set name='original', value='$value' WHERE id=$r->id");
 		}
 
@@ -551,7 +553,7 @@ class ShoppInstallation extends ShoppFlowController {
 				$value->storage = "FSStorage";
 				$value->uri = $name;
 			}
-			$value = mysql_real_escape_string(serialize($value));
+			$value = mysqli_real_escape_string(sDB::get()->dbh, serialize($value));
 			sDB::query("UPDATE $meta_table set name='$name', value='$value' WHERE id=$r->id");
 		}
 

@@ -921,21 +921,26 @@ class ShoppStorefront extends ShoppFlowController {
 		// Add dashboard page specific handlers
 		add_action( 'shopp_account_management', array($this, 'dashboard_handler') );
 
-		$query = $_SERVER['QUERY_STRING'];
-		$query = html_entity_decode($query);
-		$query = explode('&', $query);
-
 		$request = 'menu';
 		$id = false;
 
-		foreach ( $query as $queryvar ) {
-			$value = false;
-			if ( false !== strpos($queryvar, '=') ) list($key, $value) = explode('=', $queryvar);
-			else $key = $queryvar;
+		$query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : false;
 
-			if ( in_array($key, array_keys($this->dashboard)) ) {
-				$request = $key;
-				$id = $value;
+		if ( $query !== false ) {
+			$query = html_entity_decode($query);
+			$query = array_filter( explode('&', $query) ); // filter out empty arrays
+
+			if ( is_array($query) ) {
+				foreach ( $query as $queryvar ) {
+					$value = false;
+					if ( false !== strpos($queryvar, '=') ) list($key, $value) = explode('=', $queryvar);
+					else $key = $queryvar;
+
+					if ( in_array($key, array_keys($this->dashboard)) ) {
+						$request = $key;
+						$id = $value;
+					}
+				}
 			}
 		}
 

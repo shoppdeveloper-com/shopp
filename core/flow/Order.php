@@ -499,7 +499,7 @@ class ShoppOrder {
 		$Purchase->copydata($this->Shipping, 'ship');
 		$Purchase->copydata($this->Cart->Totals->data());
 		$Purchase->subtotal = $Purchase->order; // Remap order to subtotal
-		$Purchase->paymethod = $Paymethod->slug;
+		$Purchase->paymethod = isset($Paymethod->slug) ? $Paymethod->slug : '';
 		$Purchase->customer = $this->Customer->id;
 		$Purchase->taxing = shopp_setting_enabled('tax_inclusive') ? 'inclusive' : 'exclusive';
 		$Purchase->freight = $this->Cart->total('shipping');
