@@ -230,12 +230,12 @@ class ShoppPage {
 		if ( ! empty($name) ) {
 			array_unshift($templates, "$name.php"); // @deprecated
 			array_unshift($templates, "shopp-$name.php");
-		}
-
-		$templates = apply_filters('shopp_' . $name . '_storefront_page_template', $templates, $this->slug(), $this->title() );
+		}		
 		
 		$template = $this->pagetemplate();
 		if ( ! empty($template) ) array_unshift($templates, "$template.php");
+		
+		$templates = apply_filters('shopp_' . $name . '_storefront_page_templates', $templates, $this->slug(), $this->title() );
 
 		return $templates;
 	}
