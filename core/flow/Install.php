@@ -529,7 +529,7 @@ class ShoppInstallation extends ShoppFlowController {
 				$value->uri = $name;
 			}
 
-			$value = sDB::get()->escape( serialize($value) );
+			$value = sDB::escape( serialize($value) );
 			sDB::query("UPDATE $meta_table set name='original', value='$value' WHERE id=$r->id");
 		}
 
@@ -554,7 +554,7 @@ class ShoppInstallation extends ShoppFlowController {
 				$value->storage = "FSStorage";
 				$value->uri = $name;
 			}
-			$value = mysqli_real_escape_string(sDB::get()->dbh, serialize($value));
+			$value = sDB::escape( serialize($value) );
 			sDB::query("UPDATE $meta_table set name='$name', value='$value' WHERE id=$r->id");
 		}
 
