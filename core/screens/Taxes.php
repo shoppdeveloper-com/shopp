@@ -26,7 +26,7 @@ class ShoppScreenTaxes extends ShoppSettingsScreenController {
 		shopp_enqueue_script('taxrates');
 		shopp_enqueue_script('suggest');
 		shopp_localize_script('taxrates', '$tr', array(
-			'confirm' => __('Are you sure you want to remove this tax rate?','Shopp'),
+			'confirm' => __('Are you sure you want to remove this tax rate?','Shopp'), 
 		));
 	}
 
@@ -72,6 +72,7 @@ class ShoppScreenTaxes extends ShoppSettingsScreenController {
 		$rates = shopp_setting('taxrates');
 
 		$updates = $this->form('taxrates');
+
 		if ( ! empty($updates) ) {
 			if ( array_key_exists('new', $updates) ) {
 				$rates[] = $updates['new'];
@@ -152,7 +153,7 @@ class ShoppScreenTaxes extends ShoppSettingsScreenController {
 			$score = &$scoring[ $key ];
 
 			// More conditional rules are more specific
-			$score += count($rate['rules']);
+			if ( isset($rate['rules']) ) $score += count($rate['rules']);
 
 			// If there are local rates add to specificity
 			if ( isset($rate['haslocals']) && $rate['haslocals'] ) $score++;
@@ -310,8 +311,8 @@ class ShoppTaxesRatesTable extends ShoppAdminTable {
 		$args = array_merge($defaults, $_GET);
 		extract($args, EXTR_SKIP);
 
-		$rates = (array)shopp_setting('taxrates');
-
+		$rates = shopp_setting('taxrates');
+		
 		$this->items = array();
 		foreach ( $rates as $index => $taxrate )
 			$this->items[ $index ] = array_merge(self::$template, array('id' => $index), $taxrate);
@@ -457,11 +458,11 @@ class ShoppTaxesRatesTable extends ShoppAdminTable {
 
 		$label = "$rate &mdash; $location";
 
-		echo '<a class="row-title edit" href="' . $editurl . '" title="' . Shopp::__('Edit') . ' &quot;' . esc_attr($label) . '&quot;">' . esc_html($label) . '</a>';
 
 		$edit_link = wp_nonce_url(add_query_arg('id', $id), 'shopp_edit_taxrate');
 		$delete_link = wp_nonce_url(add_query_arg('delete', $id), 'shopp_delete_taxrate');
 
+		echo '<a class="row-title edit" href="' . esc_url($edit_link) . '" title="' . Shopp::__('Edit') . ' &quot;' . esc_attr($label) . '&quot;">' . esc_html($label) . '</a>';
 		echo $this->row_actions( array(
 			'edit' => '<a class="edit" href="' . $edit_link . '">' . __( 'Edit' ) . '</a>',
 			'delete' => '<a class="delete" href="' . $delete_link . '">' . __( 'Delete' ) . '</a>',
