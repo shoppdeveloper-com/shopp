@@ -26,7 +26,7 @@ class ShoppScreenTaxes extends ShoppSettingsScreenController {
 		shopp_enqueue_script('taxrates');
 		shopp_enqueue_script('suggest');
 		shopp_localize_script('taxrates', '$tr', array(
-			'confirm' => __('Are you sure you want to remove this tax rate?','Shopp'), 
+			'confirm' => __('Are you sure you want to remove this tax rate?','Shopp'),
 		));
 	}
 
@@ -311,8 +311,8 @@ class ShoppTaxesRatesTable extends ShoppAdminTable {
 		$args = array_merge($defaults, $_GET);
 		extract($args, EXTR_SKIP);
 
-		$rates = shopp_setting('taxrates');
-		
+		$rates = (array)shopp_setting('taxrates');
+
 		$this->items = array();
 		foreach ( $rates as $index => $taxrate )
 			$this->items[ $index ] = array_merge(self::$template, array('id' => $index), $taxrate);
