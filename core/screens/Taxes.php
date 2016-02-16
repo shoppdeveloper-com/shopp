@@ -482,4 +482,4 @@ class ShoppTaxesRatesTable extends ShoppAdminTable {
 		echo '<div class="checkbox ' . ( $set ? ' checked' : '' ) . '" title="' . esc_html($title) . '"><span class="hidden">' . esc_html($title) . '</div>';
 	}
 
-} // class ShoppPaymentsSettingsTable
+} // class ShoppTaxesRatesTable
