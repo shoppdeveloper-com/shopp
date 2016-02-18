@@ -36,6 +36,7 @@ class ShoppProduct extends WPShoppObject {
 	public $min = array();
 	public $sale = false;
 	public $outofstock = false;
+	public $featured = false;
 	public $excludetax = false;
 	public $variants = 'off';
 	public $addons = 'off';
