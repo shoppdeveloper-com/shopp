@@ -339,8 +339,8 @@ class ShoppStorefront extends ShoppFlowController {
 	 * @return void
 	 **/
 	public function trackurl ( WP $wp ) {
-
-		if ( ! is_shopp_catalog_page() || is_shopp_cart_page() || isset($_REQUEST['cart']) ) return;
+		
+		if ( ! is_shopp_catalog_page() || is_shopp_cart_page() ) return;
 
 		 // Track referrer for the cart referrer URL
 		$referrer = get_bloginfo('url') . $_SERVER['REQUEST_URI'];
