@@ -654,7 +654,7 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 		$collections = array();
 		foreach ( $Shopp->Collections as $slug => $CollectionClass ) {
 			if ( ! get_class_property($CollectionClass, '_menu') ) continue;
-            
+
             // Stubs out a WP_Term compatible StdClass object
 			$Collection = new StdClass;
 			$Collection->term_id = 0;
@@ -875,7 +875,7 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 	 * @return bool True if it is the catalog page, false otherwise
 	 **/
 	public static function is_catalog ( $result, $options, $O ) {
-		return is_catalog_page();
+		return is_shopp_catalog_page();
 	}
 
 	/**
@@ -1393,14 +1393,14 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 		$tags = get_terms( ProductTag::$taxon, array( 'orderby' => 'count', 'order' => 'DESC', 'number' => $number) );
 
 		if ( empty($tags) ) return false;
-		
+
 		if ( ! empty($exclude) ) {
 			$excludes = explode(',', $exclude);
-			
+
 			foreach ( $tags as $key => $tag ) {
 				if ( in_array($tag->name, $excludes) )
 					unset($tags[ $key ]);
-			}	
+			}
 		}
 
 		$min = $max = false;
