@@ -481,8 +481,7 @@ class ShoppOrdersTable extends ShoppAdminTable {
 
 		$exports = array(
 			'tab' => Shopp::__('Tab-separated.txt'),
-			'csv' => Shopp::__('Comma-separated.csv'),
-			'xls' => Shopp::__('Microsoft&reg; Excel.xls'),
+			'csv' => Shopp::__('Comma-separated.csv'),			
 			'iif' => Shopp::__('Intuit&reg; QuickBooks.iif')
 		);
 

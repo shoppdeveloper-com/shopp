@@ -274,8 +274,7 @@ class ShoppScreenCustomers extends ShoppScreenController {
 
 		$exports = array(
 			'tab' => __('Tab-separated.txt','Shopp'),
-			'csv' => __('Comma-separated.csv','Shopp'),
-			'xls' => __('Microsoft&reg; Excel.xls','Shopp')
+			'csv' => __('Comma-separated.csv','Shopp'),			
 			);
 
 
