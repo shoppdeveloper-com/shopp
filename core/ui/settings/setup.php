@@ -23,7 +23,7 @@
 				<ul>
 					<?php
 						$even = true; $classes = array(); ?>
-					<li<?php if ( $even ) $classes[] = 'odd'; $classes[] = 'hide-if-no-js'; if ( ! empty($classes) ) echo ' class="' . join(' ', $classes) . '"'; $even = !$even; ?>><input type="checkbox" name="selectall_targetmarkets"  id="selectall_targetmarkets" /><label for="selectall_targetmarkets"><strong><?php _e('Select All', 'Shopp'); ?></strong></label></li>
+					<li<?php if ( $even ) $classes[] = 'odd'; $classes[] = 'hide-if-no-js'; $classes[] = 'quick-select'; if ( ! empty($classes) ) echo ' class="' . join(' ', $classes) . '"'; $even = !$even; ?>><input type="checkbox" name="selectall_targetmarkets"  id="selectall_targetmarkets" /><label for="selectall_targetmarkets"><strong><?php _e('Select All', 'Shopp'); ?></strong></label></li>
 					<?php foreach ($targets as $iso => $country):
 							$classes = array();
 							if ( $even ) $classes[] = 'odd';
