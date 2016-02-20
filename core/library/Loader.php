@@ -444,6 +444,7 @@ ShoppLoader::map(array(
 	'shoppadminlisttable' => '/flow/Admin.php',
 	'shoppadminpage' => '/flow/AdminPages.php',
 	'shoppadminpages' => '/flow/AdminPages.php',
+	'shoppadminpostcontroller' => '/flow/Admin.php',
 	'shoppadminproducts' => '/screens/Products.php',
 	'shoppadminreports' => '/screens/Reports.php',
 	'shoppadminorders' => '/screens/Orders.php',
@@ -532,6 +533,7 @@ ShoppLoader::map(array(
 	'shoppresources' => '/flow/Resources.php',
 
 	'shoppscreencontroller' => '/library/Screen.php',
+	'shoppscreenproducteditor' => '/screens/Products.php',
 	'shoppscreensettings' => '/screens/Settings.php',
 	'shoppscreensetup' => '/screens/Setup.php',
 	'shoppscreenshipping' => '/screens/ShippingRates.php',
