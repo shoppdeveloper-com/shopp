@@ -42,8 +42,13 @@
 						endforeach; ?>
 				</ul>
 			</div>
+			<div>
+			<button name="sort_markets" value="alpha" class="button"><?php Shopp::_e('Sort Alphabetically'); ?></button>&nbsp;&nbsp;<button name="sort_markets" value="region" class="button"><?php Shopp::_e('Sort by Region'); ?></button>
+			</div>
 			<br />
-        <?php _e('Select the markets you are selling products to.', 'Shopp'); ?></td>
+			<?php Shopp::_e('Select the markets where you are selling products.'); ?><br />
+			<?php Shopp::_e('Automatically sort, or drag-and-drop to change the order countries appear.'); ?>
+		</td>
 	</tr>
 	<tr>
 		<th scope="row" valign="top"><label for="merchant_email"><?php _e('Merchant Email', 'Shopp'); ?></label></th>
