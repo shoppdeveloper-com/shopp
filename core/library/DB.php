@@ -564,6 +564,9 @@ class sDB extends SingletonFramework {
 					// sql YYYY-MM-DD HH:MM:SS format
 					} elseif ( ! empty($value) && ( is_int($value) || intval($value) > 86400) ) {
 						$value = sDB::mkdatetime( intval($value) );
+					// If the date isn't a valid SQL DATETIME, sanitize to a zero DATETIME
+					} elseif ( false === date_create_from_format('Y-m-d H:i:s', $value) ) {
+						$value = '0000-00-00 00:00:00';
 					}
 
 					$data[$property] = "'$value'";
