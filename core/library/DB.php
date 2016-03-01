@@ -570,7 +570,7 @@ class sDB extends SingletonFramework {
 					if (is_null($value))
 						$value = current_time( 'mysql' );
 					// SQL YYYY-MM-DD HH:MM:SS format
-					$value = DB::mkdatetime( intval($value) );
+					$value = sDB::mkdatetime( $value );
 
 					$data[$property] = "'$value'";
 					break;
