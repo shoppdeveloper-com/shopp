@@ -16,7 +16,7 @@ jQuery(document).ready(function ($) {
 					return true;
 				}
 				states.disable();
-				states.settings.placeholder = $ss.loading;
+				states.settings.placeholder = $ss.oading;
 				states.updatePlaceholder();
 				states.clearOptions();
 				states.load(function(callback) {
@@ -26,8 +26,9 @@ jQuery(document).ready(function ($) {
 							if ( false == data || data.length == 0 ) {
 								states.settings.placeholder = ' ';
 								states.updatePlaceholder();
+								states.$control.fadeOut(200);
 								return;
-							}
+							} else states.$control.show();
 							states.enable();
 							$.each(data, function(value, label) {
 								if ( 0 == value ) {
