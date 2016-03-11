@@ -327,17 +327,6 @@ abstract class ShoppScreenController extends ShoppRequestFormFramework {
 	}
 
 	/**
-	 * Lookout for image size delete requests or else defer to the parent class's
-	 * posted() method.
-	 *
-	 * @return bool
-	 */
-	public function posted() {
-		if ( $this->request( 'delete' ) ) return true;
-		else return parent::posted();
-	}
-
-	/**
 	 * Registers callback handlers for actions or ops
 	 *
 	 * @since 1.4
