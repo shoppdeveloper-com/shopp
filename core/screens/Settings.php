@@ -71,6 +71,7 @@ class ShoppSettingsScreenController extends ShoppScreenController {
 
 	public function updates () {
  		shopp_set_formsettings();
+		$this->notice(Shopp::__('Settings saved.'));
 	}
 
 	protected function ui ( $file ) {
