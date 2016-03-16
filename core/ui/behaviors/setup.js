@@ -4,12 +4,13 @@
  * Licensed under the GPLv3 {@see license.txt}
  */
 
-jQuery(document).ready(function ($) {
+jQuery(document).ready(function($) {
 
 	var xhr,
 		$states = $('#base_operations_zone').selectize(),
-		states = $states[0].selectize,
-		$base = $('#base_operations').selectize({
+        states = $states[0].selectize;
+    
+		$('#base_operations').selectize({
 			onChange: function (value) {
 				if ( value == '' ) {
 					states.disable();
@@ -26,8 +27,9 @@ jQuery(document).ready(function ($) {
 							if ( false == data || data.length == 0 ) {
 								states.settings.placeholder = ' ';
 								states.updatePlaceholder();
+								states.$control.fadeOut(200);
 								return;
-							}
+							} else states.$control.show();
 							states.enable();
 							$.each(data, function(value, label) {
 								if ( 0 == value ) {

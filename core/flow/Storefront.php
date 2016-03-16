@@ -339,14 +339,13 @@ class ShoppStorefront extends ShoppFlowController {
 	 * @return void
 	 **/
 	public function trackurl ( WP $wp ) {
-
-		if ( ! is_catalog_page() ) return;
+		
+		if ( ! is_shopp_catalog_page() || is_shopp_cart_page() ) return;
 
 		 // Track referrer for the cart referrer URL
-		$referrer = get_bloginfo('url') . '/' . $wp->request;
-		if ( ! empty($_GET) ) $referrer = add_query_arg($_GET, $referrer);
-		$this->referrer = user_trailingslashit($referrer);
+		$referrer = get_bloginfo('url') . $_SERVER['REQUEST_URI'];
 
+		$this->referrer = user_trailingslashit($referrer);
 	}
 
 	/**
@@ -608,7 +607,7 @@ class ShoppStorefront extends ShoppFlowController {
 			shopp_enqueue_script('shopp');
 			shopp_enqueue_script('catalog');
 			shopp_enqueue_script('cart');
-			if ( is_catalog_page() )
+			if ( is_shopp_catalog_page() )
 				shopp_custom_script('catalog', "var pricetags = {};\n" );
 		}
 

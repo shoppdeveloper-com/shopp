@@ -61,14 +61,15 @@ class ShoppScreenSetup extends ShoppSettingsScreenController {
 	public function updates () {
 			
 		// Save all other settings
-		$this->saveform();
+		if ( $this->form() )
+			$this->saveform();
 
 		$update = false;
 
 		// Update country changes
-		$country = ShoppBaseLocale()->country();
-		if ( $country != $this->form('country') ) {
-			$country = strtoupper($this->form('country'));
+		$basecountry = ShoppBaseLocale()->country();
+		$country = strtoupper($this->form('country'));
+		if ( !empty($country) && $basecountry != $country ) {
 			$countries = ShoppLookup::countries();
 
 			// Validate the country
@@ -108,8 +109,8 @@ class ShoppScreenSetup extends ShoppSettingsScreenController {
 			
 		}
 		
-
-		$this->notice(Shopp::__('Shopp settings saved.'));
+		if ( $updated )
+			$this->notice(Shopp::__('Shopp settings saved.'));
 	}
 
 	/**

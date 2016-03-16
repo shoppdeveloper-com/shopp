@@ -349,6 +349,9 @@ function shopp_default_script_settings () {
 		'chkbox' => __('%s must be checked before you can proceed.','Shopp')
 	));
 
+	// Address Helper
+	shopp_localize_script('address', '$shopp_address', array('country_no_postal_codes' => Lookup::country_no_postal_codes() ) );
+
 	// Checkout page settings & localization
 	shopp_localize_script('checkout', '$co', array(
 		'ajaxurl' =>    admin_url('admin-ajax.php'),
