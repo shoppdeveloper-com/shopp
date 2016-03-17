@@ -161,17 +161,12 @@ class ShoppScreenSetup extends ShoppSettingsScreenController {
 		$locale = ShoppBaseLocale()->region();
 		$base = ShoppBaseLocale()->country();
 		
-		$regions = ShoppLookup::regions(true);
+		$regionsdata = ShoppLookup::regions(true);
 		
-		reset($regions);
-		for ( $i = 0; $i < count($regions); $i++) {
-			$key = key($regions);
+		$baselocale = $regionsdata[ $locale ];
+		unset($regionsdata[ $locale ]);
 
-			if ( $locale === $key ) break;
-			$region = current($regions);
-			unset($regions[ $key ]);
-			$regions[ $key ] = $region;
-		}
+		$regions = array($locale => $baselocale) + $regionsdata;
 		
 		$marketcodes = array_keys($targets);
 		$sorted = array();
