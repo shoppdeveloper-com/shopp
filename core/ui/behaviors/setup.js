@@ -7,7 +7,12 @@
 jQuery(document).ready(function($) {
 
 	var xhr,
-		$states = $('#base_operations_zone').selectize(),
+		$states = $('#base_operations_zone').selectize({
+		    onInitialize: function () {
+                if ( Object.keys(this.options).length < 1 )
+                    this.$control.hide();
+		    }
+		}),
         states = $states[0].selectize;
     
 		$('#base_operations').selectize({

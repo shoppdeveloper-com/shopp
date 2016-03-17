@@ -61,19 +61,17 @@ class ShoppScreenSetup extends ShoppSettingsScreenController {
 	public function updates () {
 			
 		// Save all other settings
-		if ( $this->form() )
-			$this->saveform();
+		$this->saveform();
 
 		$update = false;
 
 		// Update country changes
-		$basecountry = ShoppBaseLocale()->country();
 		$country = strtoupper($this->form('country'));
-		if ( !empty($country) && $basecountry != $country ) {
+		if ( ShoppBaseLocale()->country() != $country ) {
 			$countries = ShoppLookup::countries();
 
 			// Validate the country
-			if ( ! isset($countries[ $country ]) )
+			if ( ! empty($country) && ! isset($countries[ $country ]) )
 				return $this->notice(Shopp::__('The country provided is not valid.'), 'error');
 
 			$update = true;
