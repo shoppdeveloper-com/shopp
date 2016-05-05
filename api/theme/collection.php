@@ -901,8 +901,8 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 			return join("\n", $_);
 		}
 		if ( $O->pages > 1 ) {
-			if ( $O->pages > $show ) $visible_pages = $show + 1;
-			else $visible_pages = $O->pages + 1;
+			if ( $O->pages > $show ) $visible_pages = $show;
+			else $visible_pages = $O->pages;
 			if( empty($jumps) )
 				$jumps = ceil( $visible_pages / 2 );
 			$_[] = $before . $label;
@@ -911,8 +911,8 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 				$i = 1;
 			} else {
 				$i = $O->page - floor( $show / 2 );
-				$visible_pages = $O->page + floor( $show / 2 ) + 1;
-				if ( $visible_pages > $O->pages ) $visible_pages = $O->pages + 1;
+				$visible_pages = $O->page + floor( $show / 2 );
+				if ( $visible_pages > $O->pages ) $visible_pages = $O->pages;
 				if ( $i > 1 ) {
 					$link = $O->pagelink(1);
 					$_[] = '<li class="first"><span><a href="' . esc_url_raw($link) . '">' . $first . '</a></span></li>';
@@ -932,7 +932,7 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 				$_[] = '<li class="' . esc_attr($classprevious) . '"><span><a href="' . esc_url_raw($link) . '" rel="prev">' . $previous . '</a></span></li>';
 			} else $_[] = '<li class="' . esc_attr($classprevious) . ' ' . esc_attr($classdisabled) . '"><span>' . $previous . '</span></li>';
 			// end previous button
-			while ( $i < $visible_pages ) {
+			while ( $i <= $visible_pages ) {
 				$link = $O->pagelink($i);
 				if ( $i == $O->page ) $_[] = '<li class="' . esc_attr($classactive) . '"><span>' . $i . '</span></li>';
 				else $_[] = '<li><span><a href="' . esc_url_raw($link) . '">' . $i . '</a></span></li>';
@@ -945,7 +945,7 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 				$_[] = '<li class="' . esc_attr($classnext) . '"><span><a href="' . esc_url_raw($link) . '" rel="next">' . $next . '</a></span></li>';
 			} else $_[] = '<li class="' . esc_attr($classnext) . ' ' . esc_attr($classdisabled) . '"><span>' . $next . '</span></li>';
 			// end next button
-			if ( $O->pages > $visible_pages ) {
+			if ( $O->pages > $visible_pages  ) {
 				$pagenum = ( $O->page + $jumps );
 				if ( $pagenum < $O->pages ) { //Only show jump forward if different than last
 					$link = $O->pagelink($pagenum);
