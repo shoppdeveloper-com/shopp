@@ -954,7 +954,7 @@ class ShoppCollectionThemeAPI implements ShoppAPI {
 					$_[] = '<li class="jumpfwd"><span><a href="' . esc_url_raw($link) . '">' . $jumpfwd . '</a></span></li>';
 				}
 				$link = $O->pagelink($O->pages);
-				$_[] = '<li><span class="last"><a href="' . esc_url_raw($link) . '">' . $last . '</a></span></li>';
+				$_[] = '<li class="last"><span><a href="' . esc_url_raw($link) . '">' . $last . '</a></span></li>';
 			}
 			$_[] = '</ul>';
 			$_[] = $after;
