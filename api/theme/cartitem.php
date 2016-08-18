@@ -516,7 +516,7 @@ class ShoppCartItemThemeAPI implements ShoppAPI {
 	 * @return string The remove button markup
 	 **/
 	public static function remove ( $result, $options, $O ) {
-		$label = __('Remove', 'Shopp');
+		$label = Shopp::__('Remove');
 		if ( isset($options['label']) ) $label = $options['label'];
 		if ( isset($options['class']) ) $class = ' class="'.$options['class'].'"';
 		else $class = ' class="remove"';
@@ -778,7 +778,9 @@ class ShoppCartItemThemeAPI implements ShoppAPI {
 		if ( empty($O->categories) ) return false;
 		if ( isset($options['id']) ) $field = "id";
 		if ( isset($options['name']) ) $field = "name";
+
 		foreach ( $O->categories as $id => $name ) {
+			
 			switch ( strtolower($field) ) {
 				case 'id': if ($options['id'] == $id) return true;
 				case 'name': if ($options['name'] == $name) return true;
@@ -869,9 +871,12 @@ class ShoppCartItemThemeAPI implements ShoppAPI {
 		if ( ! empty($class) ) $classes = ' class="' . $class . '"';
 
 		$result .= $before . '<ul' . $classes . '>';
+
 		foreach ( $O->data as $name => $data ) {
+
 			if (in_array($name,$exclude)) continue;
 			if (is_array($data)) $data = join($separator, $data);
+
 			$result .= '<li><strong>' . apply_filters('shopp_cartitem_input_name', $name) . '</strong>: ' . apply_filters('shopp_cartitem_input_data', $data, $name) . '</li>';
 		}
 		$result .= '</ul>'.$after;
