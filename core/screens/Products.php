@@ -811,7 +811,7 @@ class ShoppScreenProductEditor extends ShoppScreenController {
 		$Product->featured = 'off';
 
 		if ( isset($_POST['content']) ) $_POST['description'] = $_POST['content'];
-		$Product->updates($_POST,array('meta','categories','prices','tags'));
+		$Product->updates($_POST,array('meta','images','categories','prices','tags'));
 
 		do_action('shopp_pre_product_save');
 		$Product->save();
@@ -1082,9 +1082,9 @@ class ShoppScreenProductEditor extends ShoppScreenController {
 	 **/
 	public static function images ($file, $parent = false, $context = false) {
 		
-		status_header('500');
-		wp_die(Shopp::__('The image reference was not saved to the database.'));
-		return;
+        // status_header('500');
+        // wp_die(Shopp::__('The image reference was not saved to the database.'));
+        // return;
 		
 		$error = array();
 		$ContextClasses = array(
@@ -1135,6 +1135,7 @@ class ShoppScreenProductEditor extends ShoppScreenController {
 			status_header('500', $Error->message(true)) && wp_die();
 
 		$Image->save();
+        
 
 		if ( empty($Image->id) )
 			status_header('500', Shopp::__('The image reference was not saved to the database.')) && wp_die();

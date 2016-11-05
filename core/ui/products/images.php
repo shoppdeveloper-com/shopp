@@ -21,10 +21,6 @@
 	<div id="confirm-delete-images" class="notice hidden"><p><?php _e('Save the product to confirm deleted images.','Shopp'); ?></p></div>
 	<ul class="lightbox-dropzone">
 	<?php foreach ( (array) $Product->images as $i => $Image ) {
-			// $defaults = array(
-			// 	'compound' => false
-			// );
-			// extract($defaults);
 			echo ShoppUI::template($preview, array(
 				'${index}' => $i,
 				'${imageid}' => $Image->id,
