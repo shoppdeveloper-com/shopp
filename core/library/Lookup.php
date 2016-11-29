@@ -327,16 +327,16 @@ class ShoppLookup {
 	 **/
 	public static function paycards () {
 		$_ = array();
-		$_['amex'] = new PayCard('American Express','Amex','/^3[47]\d{13}$/',4);
-		$_['dc'] = new PayCard("Diner's Club",'DC','/^3(0[0-5]|[68]\d)\d{11}$/',3);
-		$_['disc'] = new PayCard("Discover Card",'Disc','/^(6011|65\d{2}|64[4-9]\d)\d{12}|(62\d{14})$/',3);
-		$_['jcb'] = new PayCard('JCB','JCB','/^35(28|29|[3-8]\d)\d{12}$/',3);
-		$_['dankort'] = new PayCard('Dankort','DK','/^5019\d{12}$/');
-		$_['maes'] = new PayCard('Maestro','Maes','/^(5[06-8]|6\d)\d{10,17}$/',3, array('start'=>5,'issue'=>3));
-		$_['mc'] = new PayCard('MasterCard','MC','/^(5[1-5]\d{4}|677189)\d{10}$|^2(?:2(?:2[1-9]|[3-9]\d)|[3-6]\d\d|7(?:[01]\d|20))\d{12}$/',3);
-		$_['forbrugsforeningen'] = new PayCard('Forbrugsforeningen','forbrug','/^600722\d{10}$/');
-		$_['visa'] = new PayCard('Visa','Visa','/^4\d{12}(\d{3})?(\d{3})?$/',3);
-		return apply_filters('shopp_payment_cards',$_);
+		$_['amex'] = new PayCard('American Express', 'Amex', '/^3[47]\d{13}$/', 4);
+		$_['dc'] = new PayCard("Diner's Club", 'DC', '/^3(0[0-5]|[68]\d)\d{11}$/', 3);
+		$_['disc'] = new PayCard("Discover Card", 'Disc', '/^(6011|65\d{2}|64[4-9]\d)\d{12}|(62\d{14})$/', 3);
+		$_['jcb'] = new PayCard('JCB', 'JCB', '/^35(28|29|[3-8]\d)\d{12}$/', 3);
+		$_['dankort'] = new PayCard('Dankort', 'DK', '/^5019\d{12}$/');
+		$_['maes'] = new PayCard('Maestro', 'Maes', '/^(5[06-8]|6\d)\d{10, 17}$/', 3,  array('start'=>5, 'issue'=>3));
+		$_['mc'] = new PayCard('MasterCard', 'MC', '/^(5[1-5]\d{4}|677189)\d{10}$|^2(?:2(?:2[1-9]|[3-9]\d)|[3-6]\d\d|7(?:[01]\d|20))\d{12}$/', 3);
+		$_['forbrugsforeningen'] = new PayCard('Forbrugsforeningen', 'forbrug', '/^600722\d{10}$/');
+		$_['visa'] = new PayCard('Visa', 'Visa', '/^4\d{12}(\d{3})?(\d{3})?$/', 3);
+		return apply_filters('shopp_payment_cards', $_);
 	}
 
 	/**
