@@ -335,8 +335,6 @@ class ShoppLookup {
 		$_['maes'] = new PayCard('Maestro','Maes','/^(5[06-8]|6\d)\d{10,17}$/',3, array('start'=>5,'issue'=>3));
 		$_['mc'] = new PayCard('MasterCard','MC','/^(5[1-5]\d{4}|677189)\d{10}$|^2(?:2(?:2[1-9]|[3-9]\d)|[3-6]\d\d|7(?:[01]\d|20))\d{12}$/',3);
 		$_['forbrugsforeningen'] = new PayCard('Forbrugsforeningen','forbrug','/^600722\d{10}$/');
-		$_['lasr'] = new PayCard('Laser','Lasr','/^(6304|6706|6709|6771(?!89))\d{8}(\d{4}|\d{6,7})?$/');
-		$_['solo'] = new PayCard('Solo','Solo','/^(6334|6767)(\d{12}|\d{14,15})$/',3, array('start'=>5,'issue'=>3));
 		$_['visa'] = new PayCard('Visa','Visa','/^4\d{12}(\d{3})?(\d{3})?$/',3);
 		return apply_filters('shopp_payment_cards',$_);
 	}

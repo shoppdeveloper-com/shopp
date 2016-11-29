@@ -49,19 +49,25 @@ class PayCardTests extends ShoppTestCase {
 
             array('disc', '6011000000000012', 'XXXXXXXXXXXX', '0012', true, true, true),
             array('disc', '6011111111111117', 'XXXXXXXXXXXX', '1117', true, true, true),
-            array('disc', '6011000990139424', 'XXXXXXXXXXXX', '9424', true, true, true),
+            array('disc', '6240008631401148', 'XXXXXXXXXXXX', '1148', true, true, true),
+            array('disc', '6288997715452584', 'XXXXXXXXXXXX', '2584', true, true, true),
 
-            // array('jcb', '3088000000000017', 'XXXXXXXXXXXX', '0017', true, true, true), // Should pass, but fails pattern match?
             array('jcb', '3530111333300000', 'XXXXXXXXXXXX', '0000', true, true, true),
             array('jcb', '3566002020360505', 'XXXXXXXXXXXX', '0505', true, true, true),
-
-            array('lasr', '630495060000000000', 'XXXXXXXXXXXXXX', '0000', true, true, true),
-            array('lasr', '630490017740292441', 'XXXXXXXXXXXXXX', '2441', true, true, true),
+            array('jcb', '3569990000000009', 'XXXXXXXXXXXX', '0009', true, true, true),
 
             array('dankort', '5019717010103742', 'XXXXXXXXXXXX', '3742', true, true, true),
 
-            // array('mc', '2223000010309703', 'XXXXXXXXXXXX', '9703', true, true, true), // Should pass but fails pattern match?
-            // array('mc', '2223000010309711', 'XXXXXXXXXXXX', '9711', true, true, true), // Should pass but fails pattern match?
+            array('maes', '5000000000000611', 'XXXXXXXXXXXX', '0611', true, true, true),
+            array('maes', '5000000000000512', 'XXXXXXXXXXXX', '0512', true, true, true),
+            array('maes', '5020332120751187', 'XXXXXXXXXXXX', '1187', true, true, true),
+            array('maes', '5641825849493485', 'XXXXXXXXXXXX', '3485', true, true, true),
+            array('maes', '6766000000000', 'XXXXXXXXXXXX', '0000', true, true, true),
+            array('maes', '6759649826438453', 'XXXXXXXXXXXX', '8453', true, true, true),
+            array('maes', '6799990100000000019', 'XXXXXXXXXXXXXXX', '0019', true, true, true),
+
+            array('mc', '2223000010309703', 'XXXXXXXXXXXX', '9703', true, true, true),
+            array('mc', '2223000010309711', 'XXXXXXXXXXXX', '9711', true, true, true),
             array('mc', '5105105105105100', 'XXXXXXXXXXXX', '5100', true, true, true),
             array('mc', '5424000000000015', 'XXXXXXXXXXXX', '0015', true, true, true),
             array('mc', '5454545454545454', 'XXXXXXXXXXXX', '5454', true, true, true),
@@ -73,8 +79,8 @@ class PayCardTests extends ShoppTestCase {
             array('visa', '4111111111111111', 'XXXXXXXXXXXX', '1111', true, true, true),
             array('visa', '4012888888881881', 'XXXXXXXXXXXX', '1881', true, true, true),
             array('visa', '4222222222222', 'XXXXXXXXXXXX', '2222', true, true, true),
-            // array('visa', '4917610000000000003', 'XXXXXXXXXXXXXXX', '0003', true, true, true), // Visa Debit
-            // array('visa', '4484070000000000007', 'XXXXXXXXXXXXXXX', '0007', true, true, true), // V Pay 19-digit
+            array('visa', '4917610000000000003', 'XXXXXXXXXXXXXXX', '0003', true, true, true), // Visa Debit
+            array('visa', '4484070000000000007', 'XXXXXXXXXXXXXXX', '0007', true, true, true), // V Pay 19-digit
 
             // Invalid cards
             array('amex', '34343434343434', 'XXXXXXXXXXXX', '3434', false, true, false),
