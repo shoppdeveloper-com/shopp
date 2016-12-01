@@ -88,6 +88,9 @@ class ShoppOrder {
 		// Ensure payment card PAN is truncated after successful processing
 		add_action('shopp_authed_order_event', array($this, 'securecard'));
 
+		// Session handling
+		add_action('shopp_session_save', array($this, 'secure_session'));
+		
 		// Reset handlers
 		add_action('shopp_resession', array($this, 'init'));
 		add_action('shopp_pre_resession', array($this, 'clear'), 100);
@@ -884,4 +887,27 @@ class ShoppOrder {
 
 	}
 
+	/**
+	 * Secure session if secure information is in the order
+	 *
+	 * @author Matthew Sigley
+	 * @since 1.3.12
+	 *
+	 * @return void
+	 **/
+	public function secure_session () {
+		$Shopping = ShoppShopping();
+
+		if( $Shopping->secured() )
+			return;
+		
+		if( ! empty($this->Billing->cardtype) 
+			|| ! empty($this->Billing->card) 
+			|| ! empty($this->Billing->cvv) 
+			|| ! empty($this->Billing->cardexpires) 
+			|| ! empty($this->Billing->cardholder)
+			|| !empty( $Billing->Billing->xcsc ) ) {
+			$Shopping->secured(true);
+		}
+	}
 }

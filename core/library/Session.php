@@ -233,8 +233,7 @@ abstract class ShoppSessionFramework {
 		if ( false === $this->data )
 			return false; // Encryption failed because of no SSL, do not save
 
-		if( $this->data->BillingAddress->card != '' && ! $this->secure ) //Sanity check
-			$this->secured(true);
+		do_action('shopp_session_save');
 		
 		$data = sDB::escape( addslashes(serialize($this->data)) );
 		$this->encrypt($data);
