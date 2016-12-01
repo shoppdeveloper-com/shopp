@@ -824,8 +824,8 @@ class ShoppOrder {
 		return $this->Payments->secure() || is_ssl();
 	}
 
-	/**
-	 * Secures the payment card by truncating it to the last four digits
+/**
+	 * Secures the payment card by removing it from the session
 	 *
 	 * @author Jonathan Davis
 	 * @since 1.2
@@ -833,7 +833,18 @@ class ShoppOrder {
 	 * @return void
 	 **/
 	public function securecard () {
+		$this->Billing->cardtype = '';
 		$this->Billing->card = '';
+		$this->Billing->cvv = '';
+		$this->Billing->cardexpires = 0;
+		$this->Billing->cardholder = '';
+
+		if( !empty( $Billing->Billing->xcsc ) ) {
+			foreach( $Billing->Billing->xcsc as $field ) {
+				unset( $Billing->$field );
+			}
+			unset( $Billing->Billing->xcsc ); 
+		}
 
 		// Card data is gone, switch the cart to normal mode
 		ShoppShopping()->secured(false);
