@@ -91,7 +91,7 @@ class ShoppAdminPages {
 		// Settings pages
 		$this->add('settings-core',         Shopp::__('Setup'),          'ShoppAdminSettings', 'settings', 'shoppui-th-list');
 		$this->add('settings-shipping',     Shopp::__('Shipping Rates'), 'ShoppAdminSettings', 'settings', 'shoppui-map-marker');
-		$this->add('settings-boxes',        Shopp::__('Shipment Boxes'), 'ShoppAdminSettings', 'settings', 'shoppui-archive');
+		// $this->add('settings-boxes',        Shopp::__('Shipment Boxes'), 'ShoppAdminSettings', 'settings', 'shoppui-archive');
 		$this->add('settings-downloads',    Shopp::__('Downloads'),      'ShoppAdminSettings', 'settings', 'shoppui-download');
 		$this->add('settings-orders',       Shopp::__('Orders'),         'ShoppAdminSettings', 'settings', 'shoppui-flag');
 		$this->add('settings-payments',     Shopp::__('Payments'),       'ShoppAdminSettings', 'settings', 'shoppui-credit');

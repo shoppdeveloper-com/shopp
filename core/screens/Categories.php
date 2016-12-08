@@ -261,6 +261,13 @@ class ShoppScreenCategories extends ShoppScreenController {
 		include $this->ui('categories.php');
 	}
 
+	public function load_category ( $term, $taxonomy ) {
+		$Category = new ProductCategory();
+		$Category->populate($term);
+
+		return $Category;
+	}
+
 	public function metaloader (&$records,&$record) {
 		if (empty($this->categories)) return;
 		if (empty($record->name)) return;
@@ -451,7 +458,7 @@ class ShoppScreenCategoryEditor extends ShoppScreenController {
 	 * @return void
 	 **/
 	public function layout () {
-		
+
 		$Category = $this->Model;
 
 		new ShoppAdminCategorySaveBox($this, 'side', 'core', array('Category' => $Category));
@@ -518,7 +525,7 @@ class ShoppScreenCategoryEditor extends ShoppScreenController {
 
 		return $Category;
 	}
-	
+
 	public function load () {
 
 		if ( $this->request('new') )

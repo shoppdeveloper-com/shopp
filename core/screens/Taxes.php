@@ -54,14 +54,14 @@ class ShoppScreenTaxes extends ShoppSettingsScreenController {
 
 	}
 
-	public function ops() {
-		add_action('shopp_admin_settings_ops', array($this, 'addrule') );
-		add_action('shopp_admin_settings_ops', array($this, 'deleterule') );
-		add_action('shopp_admin_settings_ops', array($this, 'addlocals') );
-		add_action('shopp_admin_settings_ops', array($this, 'rmvlocals') );
-		add_action('shopp_admin_settings_ops', array($this, 'upload') );
-		add_action('shopp_admin_settings_ops', array($this, 'updates') );
-	}
+	// public function ops() {
+	// 	add_action('shopp_admin_settings_ops', array($this, 'addrule') );
+	// 	add_action('shopp_admin_settings_ops', array($this, 'deleterule') );
+	// 	add_action('shopp_admin_settings_ops', array($this, 'addlocals') );
+	// 	add_action('shopp_admin_settings_ops', array($this, 'rmvlocals') );
+	// 	add_action('shopp_admin_settings_ops', array($this, 'upload') );
+	// 	add_action('shopp_admin_settings_ops', array($this, 'updates') );
+	// }
 
 	public function layout() {
 		$this->table('ShoppTaxesRatesTable');
@@ -72,7 +72,6 @@ class ShoppScreenTaxes extends ShoppSettingsScreenController {
 		$rates = shopp_setting('taxrates');
 
 		$updates = $this->form('taxrates');
-
 		if ( ! empty($updates) ) {
 			if ( array_key_exists('new', $updates) ) {
 				$rates[] = $updates['new'];
@@ -84,13 +83,17 @@ class ShoppScreenTaxes extends ShoppSettingsScreenController {
 
 			shopp_set_setting('taxrates', $rates);
 			unset($_POST['settings']['taxrates']);
+
+			$this->notice(Shopp::__('Tax rates saved.'));
 		}
 
-		shopp_set_formsettings(); // Save other tax settings
+		$inclusive = $this->form('tax_inclusive');
+		$shipping = $this->form('tax_shipping');
+		if ( ! ( empty($inclusive) || empty($shipping) ) ) {
+			shopp_set_formsettings(); // Save other tax settings
+			$this->notice(Shopp::__('Tax settings saved.'));
+		}
 
-		$this->notice(Shopp::__('Tax settings saved.'));
-
-		Shopp::redirect(add_query_arg());
 	}
 
 	public function addrule () {
