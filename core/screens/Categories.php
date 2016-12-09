@@ -18,6 +18,8 @@ class ShoppAdminCategories extends ShoppAdminPostController {
 	protected $ui = 'categories';
 
 	protected function route () {
+		$this->workflow();
+
 		if ( 'products' == $this->request('a') && $this->request('id') )
 			return 'ShoppScreenCategoryArrangeProducts';
 		elseif ( $this->request('id') )
@@ -25,7 +27,196 @@ class ShoppAdminCategories extends ShoppAdminPostController {
 		else return 'ShoppScreenCategories';
 	}
 
-}
+	/**
+	 * Handles loading, saving and deleting categories in a workflow context
+	 *
+	 * @author Jonathan Davis
+	 * @since 1.0
+	 * @return void
+	 **/
+	public function workflow () {
+
+		$defaults = array(
+			'action' => false,
+			'selected' => array(),
+			'page' => false,
+			'id' => false,
+			'save' => false,
+			'next' => false,
+			'_wpnonce' => false
+		);
+		$args = array_merge($defaults, $_REQUEST);
+		extract($args, EXTR_SKIP);
+
+		// if ( ! defined('WP_ADMIN') || $page != $this->page() )
+		// 	return false;
+
+		$adminurl = admin_url('admin.php');
+
+		add_screen_option( 'per_page', array( 'label' => __('Categories Per Page','Shopp'), 'default' => 20, 'option' => 'edit_' . ProductCategory::$taxon . '_per_page' ) );
+
+		if ( 'delete' == $action && wp_verify_nonce($_wpnonce, 'shopp_categories_manager') ) {
+			if ( ! empty($id) ) $selected = array($id);
+			$total = count($selected);
+			foreach ( $selected as $selection ) {
+				$DeletedCategory = new ProductCategory($selection);
+				$deleted = $DeletedCategory->name;
+				$DeletedCategory->delete();
+			}
+			if ( 1 == $total ) $this->notice(Shopp::__('Deleted %s category.', "<strong>$deleted</strong>"));
+			else $this->notice(Shopp::__('Deleted %s categories.', "<strong>$total</strong>"));
+
+			$reset = array('selected' => null, 'action' => null, 'id' => null, '_wpnonce' => null, );
+			$redirect = add_query_arg(array_merge($_GET, $reset), $adminurl);
+			Shopp::redirect( $redirect );
+			exit;
+		}
+
+		if ( $id && 'new' != $id )
+			$Category = new ProductCategory($id);
+		else $Category = new ProductCategory();
+
+		$meta = array('specs', 'priceranges', 'options', 'prices');
+		foreach ( $meta as $prop )
+			if ( ! isset($Category->$prop) ) $Category->$prop = array();
+
+		if ( $save ) {
+			$this->save($Category);
+
+			// Workflow handler
+			if ( isset($_REQUEST['settings']) && isset($_REQUEST['settings']['workflow']) ) {
+				$workflow = $_REQUEST['settings']['workflow'];
+				$working = array_search($id, $this->worklist);
+
+				switch( $workflow ) {
+					case 'close': $next = 'close'; break;
+					case 'new': $next = 'new'; break;
+					case 'next': $key = $working + 1; break;
+					case 'previous': $key = $working - 1; break;
+				}
+
+				if ( isset($key) ) $next = isset($this->worklist[ $key ]) ? $this->worklist[ $key ] : 'close';
+
+			}
+
+			if ( $next ) {
+				if ( 'new' == $next ) $Category = new ProductCategory();
+				else $Category = new ProductCategory($next);
+			} else {
+				if ( empty($id) ) $id = $Category->id;
+				$Category = new ProductCategory($id);
+			}
+		}
+
+		ShoppCollection($Category);
+
+	}
+
+	/**
+	 * Handles saving updated category information from the category editor
+	 *
+	 * @author Jonathan Davis
+	 * @since 1.4
+	 * @return void
+	 **/
+	public function save ( $Category ) {
+		$Shopp = Shopp::object();
+
+		check_admin_referer('shopp-save-category');
+
+		if ( ! current_user_can('shopp_categories') )
+			wp_die(__('You do not have sufficient permissions to access this page.'));
+
+		shopp_set_formsettings(); // Save workflow setting
+
+		if (empty($Category->meta))
+			$Category->load_meta();
+
+		if (isset($_POST['content'])) $_POST['description'] = $_POST['content'];
+
+		$Category->name = $_POST['name'];
+		$Category->description = $_POST['description'];
+		$Category->parent = $_POST['parent'];
+		$Category->prices = array();
+
+		// Variation price templates
+		if (!empty($_POST['price']) && is_array($_POST['price'])) {
+			foreach ($_POST['price'] as &$pricing) {
+				$pricing['price'] = Shopp::floatval($pricing['price'],false);
+				$pricing['saleprice'] = Shopp::floatval($pricing['saleprice'],false);
+				$pricing['shipfee'] = Shopp::floatval($pricing['shipfee'],false);
+				$pricing['dimensions'] = array_map(array('Shopp', 'floatval'), $pricing['dimensions']);
+			}
+		}
+
+		$_POST['prices'] = isset($_POST['price'])?$_POST['price']:array();
+
+		if (empty($_POST['specs'])) $Category->specs = array();
+
+		/* @todo Move the rest of category meta inputs to [meta] inputs eventually */
+		if (isset($_POST['meta']) && isset($_POST['meta']['options'])) {
+			// Moves the meta options input to 'options' index for compatibility
+			$_POST['options'] = $_POST['meta']['options'];
+		}
+
+		if (empty($_POST['meta']['options'])
+			|| (count($_POST['meta']['options']['v']) == 1 && !isset($_POST['meta']['options']['v'][1]['options']) ) ) {
+				$_POST['options'] = $Category->options = array();
+				$_POST['prices'] = $Category->prices = array();
+		}
+
+		$metaprops = array('spectemplate','facetedmenus','variations','pricerange','priceranges','specs','options','prices');
+		$metadata = array_filter_keys($_POST, $metaprops);
+
+		// Update existing entries
+		$updates = array();
+		foreach ($Category->meta as $id => $MetaObject) {
+			$name = $MetaObject->name;
+			if ( isset($metadata[ $name ]) ) {
+				$MetaObject->value = stripslashes_deep($metadata[ $name ]);
+				$updates[] = $name;
+			}
+		}
+
+		// Create any new missing meta entries
+		$new = array_diff(array_keys($metadata), $updates); // Determine new entries from the exsting updates
+		foreach ( $new as $name ) {
+			if ( ! isset($metadata[ $name ]) ) continue;
+	        $Meta = new MetaObject();
+	        $Meta->name = $name;
+			$Meta->value = stripslashes_deep($metadata[ $name ]);
+	        $Category->meta[] = $Meta;
+		}
+
+		$Category->save();
+
+		if (!empty($_POST['deleteImages'])) {
+			$deletes = array();
+			if (strpos($_POST['deleteImages'],","))	$deletes = explode(',', $_POST['deleteImages']);
+			else $deletes = array($_POST['deleteImages']);
+			$Category->delete_images($deletes);
+		}
+
+		if (!empty($_POST['images']) && is_array($_POST['images'])) {
+			$Category->link_images($_POST['images']);
+			$Category->save_imageorder($_POST['images']);
+			if (!empty($_POST['imagedetails']) && is_array($_POST['imagedetails'])) {
+				foreach($_POST['imagedetails'] as $i => $data) {
+					$Image = new CategoryImage($data['id']);
+					$Image->title = $data['title'];
+					$Image->alt = $data['alt'];
+					$Image->save();
+				}
+			}
+		}
+
+		do_action_ref_array('shopp_category_saved', array($Category));
+
+		// $this->notice(Shopp::__('%s category saved.', '<strong>' . $Category->name . '</strong>'));
+
+	}
+
+} // END class ShoppAdminCategories
 
 class ShoppScreenCategories extends ShoppScreenController {
 
@@ -99,91 +290,6 @@ class ShoppScreenCategories extends ShoppScreenController {
 			$this->worklist = $this->categories(true);
 			$this->worklist['query'] = $_GET;
 		}
-	}
-
-	/**
-	 * Handles loading, saving and deleting categories in a workflow context
-	 *
-	 * @author Jonathan Davis
-	 * @since 1.0
-	 * @return void
-	 **/
-	public function workflow () {
-
-		$defaults = array(
-			'action' => false,
-			'selected' => array(),
-			'page' => false,
-			'id' => false,
-			'save' => false,
-			'next' => false,
-			'_wpnonce' => false
-		);
-		$args = array_merge($defaults, $_REQUEST);
-		extract($args, EXTR_SKIP);
-
-		if ( ! defined('WP_ADMIN') || $page != $this->page() )
-			return false;
-
-		$adminurl = admin_url('admin.php');
-
-		add_screen_option( 'per_page', array( 'label' => __('Categories Per Page','Shopp'), 'default' => 20, 'option' => 'edit_' . ProductCategory::$taxon . '_per_page' ) );
-
-		if ( 'delete' == $action && wp_verify_nonce($_wpnonce, 'shopp_categories_manager') ) {
-			if ( ! empty($id) ) $selected = array($id);
-			$total = count($selected);
-			foreach ( $selected as $selection ) {
-				$DeletedCategory = new ProductCategory($selection);
-				$deleted = $DeletedCategory->name;
-				$DeletedCategory->delete();
-			}
-			if ( 1 == $total ) $this->notice(Shopp::__('Deleted %s category.', "<strong>$deleted</strong>"));
-			else $this->notice(Shopp::__('Deleted %s categories.', "<strong>$total</strong>"));
-
-			$reset = array('selected' => null, 'action' => null, 'id' => null, '_wpnonce' => null, );
-			$redirect = add_query_arg(array_merge($_GET, $reset), $adminurl);
-			Shopp::redirect( $redirect );
-			exit;
-		}
-
-		if ( $id && 'new' != $id )
-			$Category = new ProductCategory($id);
-		else $Category = new ProductCategory();
-
-		$meta = array('specs', 'priceranges', 'options', 'prices');
-		foreach ( $meta as $prop )
-			if ( ! isset($Category->$prop) ) $Category->$prop = array();
-
-		if ( $save ) {
-			$this->save($Category);
-
-			// Workflow handler
-			if ( isset($_REQUEST['settings']) && isset($_REQUEST['settings']['workflow']) ) {
-				$workflow = $_REQUEST['settings']['workflow'];
-				$working = array_search($id, $this->worklist);
-
-				switch( $workflow ) {
-					case 'close': $next = 'close'; break;
-					case 'new': $next = 'new'; break;
-					case 'next': $key = $working + 1; break;
-					case 'previous': $key = $working - 1; break;
-				}
-
-				if ( isset($key) ) $next = isset($this->worklist[ $key ]) ? $this->worklist[ $key ] : 'close';
-
-			}
-
-			if ( $next ) {
-				if ( 'new' == $next ) $Category = new ProductCategory();
-				else $Category = new ProductCategory($next);
-			} else {
-				if ( empty($id) ) $id = $Category->id;
-				$Category = new ProductCategory($id);
-			}
-		}
-
-		ShoppCollection($Category);
-
 	}
 
 	/**
@@ -595,110 +701,6 @@ class ShoppScreenCategoryEditor extends ShoppScreenController {
 		do_action('do_meta_boxes', ProductCategory::$taxon, 'side', $Category);
 
 		include $this->ui('category.php');
-	}
-
-	/**
-	 * Handles saving updated category information from the category editor
-	 *
-	 * @author Jonathan Davis
-	 * @since 1.0
-	 * @return void
-	 **/
-	public function save ( $Category ) {
-		$Shopp = Shopp::object();
-
-		check_admin_referer('shopp-save-category');
-
-		if ( ! current_user_can('shopp_categories') )
-			wp_die(__('You do not have sufficient permissions to access this page.'));
-
-		shopp_set_formsettings(); // Save workflow setting
-
-		if (empty($Category->meta))
-			$Category->load_meta();
-
-		if (isset($_POST['content'])) $_POST['description'] = $_POST['content'];
-
-		$Category->name = $_POST['name'];
-		$Category->description = $_POST['description'];
-		$Category->parent = $_POST['parent'];
-		$Category->prices = array();
-
-		// Variation price templates
-		if (!empty($_POST['price']) && is_array($_POST['price'])) {
-			foreach ($_POST['price'] as &$pricing) {
-				$pricing['price'] = Shopp::floatval($pricing['price'],false);
-				$pricing['saleprice'] = Shopp::floatval($pricing['saleprice'],false);
-				$pricing['shipfee'] = Shopp::floatval($pricing['shipfee'],false);
-				$pricing['dimensions'] = array_map(array('Shopp', 'floatval'), $pricing['dimensions']);
-			}
-		}
-
-		$_POST['prices'] = isset($_POST['price'])?$_POST['price']:array();
-
-		if (empty($_POST['specs'])) $Category->specs = array();
-
-		/* @todo Move the rest of category meta inputs to [meta] inputs eventually */
-		if (isset($_POST['meta']) && isset($_POST['meta']['options'])) {
-			// Moves the meta options input to 'options' index for compatibility
-			$_POST['options'] = $_POST['meta']['options'];
-		}
-
-		if (empty($_POST['meta']['options'])
-			|| (count($_POST['meta']['options']['v']) == 1 && !isset($_POST['meta']['options']['v'][1]['options']) ) ) {
-				$_POST['options'] = $Category->options = array();
-				$_POST['prices'] = $Category->prices = array();
-		}
-
-		$metaprops = array('spectemplate','facetedmenus','variations','pricerange','priceranges','specs','options','prices');
-		$metadata = array_filter_keys($_POST, $metaprops);
-
-		// Update existing entries
-		$updates = array();
-		foreach ($Category->meta as $id => $MetaObject) {
-			$name = $MetaObject->name;
-			if ( isset($metadata[ $name ]) ) {
-				$MetaObject->value = stripslashes_deep($metadata[ $name ]);
-				$updates[] = $name;
-			}
-		}
-
-		// Create any new missing meta entries
-		$new = array_diff(array_keys($metadata), $updates); // Determine new entries from the exsting updates
-		foreach ( $new as $name ) {
-			if ( ! isset($metadata[ $name ]) ) continue;
-	        $Meta = new MetaObject();
-	        $Meta->name = $name;
-			$Meta->value = stripslashes_deep($metadata[ $name ]);
-	        $Category->meta[] = $Meta;
-		}
-
-		$Category->save();
-
-		if (!empty($_POST['deleteImages'])) {
-			$deletes = array();
-			if (strpos($_POST['deleteImages'],","))	$deletes = explode(',', $_POST['deleteImages']);
-			else $deletes = array($_POST['deleteImages']);
-			$Category->delete_images($deletes);
-		}
-
-		if (!empty($_POST['images']) && is_array($_POST['images'])) {
-			$Category->link_images($_POST['images']);
-			$Category->save_imageorder($_POST['images']);
-			if (!empty($_POST['imagedetails']) && is_array($_POST['imagedetails'])) {
-				foreach($_POST['imagedetails'] as $i => $data) {
-					$Image = new CategoryImage($data['id']);
-					$Image->title = $data['title'];
-					$Image->alt = $data['alt'];
-					$Image->save();
-				}
-			}
-		}
-
-		do_action_ref_array('shopp_category_saved', array($Category));
-
-		$this->notice(Shopp::__('%s category saved.', '<strong>' . $Category->name . '</strong>'));
-
 	}
 
 }
