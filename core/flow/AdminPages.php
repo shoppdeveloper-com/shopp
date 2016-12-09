@@ -95,7 +95,7 @@ class ShoppAdminPages {
 		$this->add('settings-downloads',    Shopp::__('Downloads'),      'ShoppAdminSettings', 'settings', 'shoppui-download');
 		$this->add('settings-orders',       Shopp::__('Orders'),         'ShoppAdminSettings', 'settings', 'shoppui-flag');
 		$this->add('settings-payments',     Shopp::__('Payments'),       'ShoppAdminSettings', 'settings', 'shoppui-credit');
-		$this->add('settings-taxes',        Shopp::__('Taxes'),	         'ShoppAdminSettings', 'settings', 'shoppui-money');
+		$this->add('settings-taxes',        Shopp::__('Taxes'),	         'ShoppAdminSettings', 'settings', 'shoppui-govt');
 		$this->add('settings-presentation', Shopp::__('Presentation'),   'ShoppAdminSettings', 'settings', 'shoppui-th-large');
 		$this->add('settings-pages',        Shopp::__('Pages'),          'ShoppAdminSettings', 'settings', 'shoppui-file');
 		$this->add('settings-images',       Shopp::__('Images'),         'ShoppAdminSettings', 'settings', 'shoppui-picture');
