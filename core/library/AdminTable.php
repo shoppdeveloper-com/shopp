@@ -978,7 +978,7 @@ abstract class ShoppAdminTable extends ShoppRequestFramework {
 
 		if ( $actions = $this->get_bulk_actions($which) ) {
 			echo '	<div class="alignleft actions bulkactions">';
-			echo $actions;
+			$this->bulk_actions($which);
 			echo '	</div>';
 		}
 
