@@ -69,16 +69,16 @@ abstract class ShoppCore {
 
 		// Define translated messages
 		$_ = array(
-			'header'	    => Shopp::_x('Shopp Activation Error', 'Shopp activation error'),
-			'intro'	        => Shopp::_x('Sorry! Shopp cannot be activated for this WordPress install.', 'Shopp activation error'),
+			'header'		=> Shopp::_x('Shopp Activation Error', 'Shopp activation error'),
+			'intro'			=> Shopp::_x('Sorry! Shopp cannot be activated for this WordPress install.', 'Shopp activation error'),
 			'phpversion'	=> Shopp::_x(Shopp::__('Your server is running PHP %s!', PHP_VERSION), 'Shopp activation error'),
-			'php524'	    => Shopp::_x('Shopp requires PHP 5.2.4+.', 'Shopp activation error'),
-			'wpversion'	    => Shopp::_x(Shopp::__('This site is running WordPress %s!', get_bloginfo('version')), 'Shopp activation error'),
-			'wp35'	        => Shopp::_x('Shopp requires WordPress 3.5.', 'Shopp activation error'),
-			'gdsupport'	    => Shopp::_x('Your server does not have GD support! Shopp requires the GD image library with JPEG support for generating gallery and thumbnail images.', 'Shopp activation error'),
+			'php524'		=> Shopp::_x('Shopp requires PHP 5.2.4+.', 'Shopp activation error'),
+			'wpversion'		=> Shopp::_x(Shopp::__('This site is running WordPress %s!', get_bloginfo('version')), 'Shopp activation error'),
+			'wp35'			=> Shopp::_x('Shopp requires WordPress 3.5.', 'Shopp activation error'),
+			'gdsupport'		=> Shopp::_x('Your server does not have GD support! Shopp requires the GD image library with JPEG support for generating gallery and thumbnail images.', 'Shopp activation error'),
 			'jpgsupport'	=> Shopp::_x('Your server does not have JPEG support for the GD library! Shopp requires JPEG support in the GD image library to generate JPEG images.', 'Shopp activation error'),
-			'nextstep'	    => Shopp::_x(Shopp::__('Try contacting your web hosting provider or server administrator to upgrade your server. For more information about the requirements for running Shopp, see the %sShopp Documentation%s', '<a href="' . ShoppSupport::DOCS . 'system-requirements">', '</a>'), 'Shopp activation error'),
-			'continue'	    => Shopp::_x('Return to Plugins page', 'Shopp activation error')
+			'nextstep'		=> Shopp::_x(Shopp::__('Try contacting your web hosting provider or server administrator to upgrade your server. For more information about the requirements for running Shopp, see the %sShopp Documentation%s', '<a href="' . ShoppSupport::DOCS . 'system-requirements">', '</a>'), 'Shopp activation error'),
+			'continue'		=> Shopp::_x('Return to Plugins page', 'Shopp activation error')
 		);
 
 		if ( $activation ) {
@@ -1009,11 +1009,11 @@ abstract class ShoppCore {
 			// adobe
 			case 'pdf':	return 'application/pdf';
 			case 'psd': return 'image/vnd.adobe.photoshop';
-		    case 'ai': case 'eps': case 'ps': return 'application/postscript';
+			case 'ai': case 'eps': case 'ps': return 'application/postscript';
 
 			// open office
-		    case 'odt': return 'application/vnd.oasis.opendocument.text';
-		    case 'ods': return 'application/vnd.oasis.opendocument.spreadsheet';
+			case 'odt': return 'application/vnd.oasis.opendocument.text';
+			case 'ods': return 'application/vnd.oasis.opendocument.spreadsheet';
 		}
 
 		return false;
@@ -1165,11 +1165,20 @@ abstract class ShoppCore {
 	 * @return boolean Returns true if a bot user agent is detected
 	 **/
 	public static function is_robot() {
-		$bots = array('Googlebot', 'TeomaAgent', 'Zyborg', 'Gulliver', 'Architext spider', 'FAST-WebCrawler', 'Slurp', 'Ask Jeeves', 'ia_archiver', 'Scooter', 'Mercator', 'crawler@fast', 'Crawler', 'InfoSeek sidewinder', 'Lycos_Spider_(T-Rex)', 'Fluffy the Spider', 'Ultraseek', 'MantraAgent', 'Moget', 'MuscatFerret', 'VoilaBot', 'Sleek Spider', 'KIT_Fireball', 'WebCrawler');
-		if ( ! isset($_SERVER['HTTP_USER_AGENT']) ) return apply_filters('shopp_agent_is_robot', true, '');
-		foreach ( $bots as $bot )
-			if ( false !== strpos(strtolower($_SERVER['HTTP_USER_AGENT']), strtolower($bot))) return apply_filters('shopp_agent_is_robot', true, esc_attr($_SERVER['HTTP_USER_AGENT']));
-		return apply_filters('shopp_agent_is_robot', false, esc_attr($_SERVER['HTTP_USER_AGENT']));
+		$isbot = true;
+		$ua = '';
+		if ( isset($_SERVER['HTTP_USER_AGENT']) ) {
+			$isbot = false;
+			$ua = $_SERVER['HTTP_USER_AGENT'];
+			$agent = strtolower($ua);
+			$bots = array('bot', 'spider', 'crawl', 'walker', 'feed', 'read', 'seo', 'map', 'dns', 'watch', 'link', 'speed', 'scan', 'site', 'scraping', 'search', 'check', 'test', 'archive', 'agent', 'alert', 'status', 'uptime', 'monitor', 'track', 'analytic', 'analyzer', 'download', 'profile', 'probe', 'whois', 'webdoc', 'slurp', 'scrapy', 'image', 'thumb', 'appengine', 'teoma', 'admantx', 'acoon', 'coccoc', 'scrubby', 'yandex', 'nutch', 'ichiro', 'dareboost', 'yahoo', 'adword', 'adbeat', 'qwantify', 'facebookexternalhit');
+			foreach ( $bots as $bot ) {
+				$isbot = ( false !== strpos($agent, $bot) );
+				if ( $isbot ) break;
+			}
+		}
+
+		return apply_filters('shopp_agent_is_robot', $isbot, esc_attr($ua));
 	}
 
 	/**
@@ -1447,10 +1456,10 @@ abstract class ShoppCore {
 
 		$string = '';
 		$string .= ( isset($country) )  ? "$country "  : '';
-		$string .= ( isset($area) )     ? "($area) "   : '';
-		$string .= ( isset($prefix) )   ? $prefix      : '';
+		$string .= ( isset($area) )	 ? "($area) "   : '';
+		$string .= ( isset($prefix) )   ? $prefix	  : '';
 		$string .= ( isset($exchange) ) ? "-$exchange" : '';
-		$string .= ( isset($ext) )      ? " x$ext"     : '';
+		$string .= ( isset($ext) )	  ? " x$ext"	 : '';
 
 		return $string;
 	}
@@ -1801,13 +1810,13 @@ abstract class ShoppCore {
 	 * "info@merchant.com, dispatch@merchant.com, partners@other.co" this method
 	 * should return:
 	 *
-	 *     "Supplies Unlimited" <info@merchant.com>
+	 *	 "Supplies Unlimited" <info@merchant.com>
 	 *
 	 * Preventing the other addresses from being exposed in the email header. NB:
 	 * if no addressee is supplied we will simply get back a solitary email address
 	 * without enclosing angle brackets:
 	 *
-	 *     info@merchant.com
+	 *	 info@merchant.com
 	 *
 	 * @see ShoppCore::email_to()
 	 * @param string $addresses
@@ -1839,20 +1848,20 @@ abstract class ShoppCore {
 	 * where notices are being sent back to the merchant and they want to copy in
 	 * other staff, partner organizations etc. Given as the $addresses:
 	 *
-	 *     "info@merchant.com, dispatch@merchant.com, partners@other.co"
+	 *	 "info@merchant.com, dispatch@merchant.com, partners@other.co"
 	 *
 	 * And as the $addressee:
 	 *
-	 *     "Supplies Unlimited"
+	 *	 "Supplies Unlimited"
 	 *
 	 * This will return:
 	 *
-	 *     "Supplies Unlimited" <info@merchant.com>, dispatch@merchant.com, partners@other.co"
+	 *	 "Supplies Unlimited" <info@merchant.com>, dispatch@merchant.com, partners@other.co"
 	 *
 	 * However, if there is only a single email address rather than several seperated by
 	 * commas it will simply return:
 	 *
-	 *     "Supplies Unlimited" <info@merchant.com>"
+	 *	 "Supplies Unlimited" <info@merchant.com>"
 	 *
 	 * @see ShoppCore::email_from()
 	 * @param $addresses
@@ -2817,7 +2826,6 @@ function rsa_encrypt ($data, $pkey) {
 	return Shopp::rsa_encrypt($data, $pkey);
 }
 
-
 /**
  * @deprecated Use Shopp::scan_money_format()
  **/
@@ -2934,7 +2942,6 @@ function sort_tree ($items,$parent=0,$key=-1,$depth=-1) {
 /**
  * @deprecated Use Shopp::str_true()
  **/
-
 function str_true ( $string, $istrue = array('yes', 'y', 'true','1','on','open') ) {
 	return Shopp::str_true($string,$istrue);
 }

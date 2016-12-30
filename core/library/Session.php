@@ -61,7 +61,7 @@ abstract class ShoppSessionFramework {
 
 		if ( ! $this->open() ) // Reopen an existing session
 			$this->cook(); // Cook a new session cookie
-			
+
 		add_action('shutdown', array($this, 'save')); // Save on shutdown
 
 		shopp_debug('Session started ' . str_repeat('-', 64));
@@ -156,7 +156,7 @@ abstract class ShoppSessionFramework {
 
 			if ( ! empty($this->session) ) {
 				$this->session(true); // Cookie exists, but no session in the database, re-session (new id)
-				$this->cook();        // Ensure leftover session cookies are replaced for security reasons
+				$this->cook();		// Ensure leftover session cookies are replaced for security reasons
 			}
 
 			return false;
@@ -199,16 +199,16 @@ abstract class ShoppSessionFramework {
 			$this->modified = time();
 
 		return $this->setcookie(
-			SHOPP_SESSION_COOKIE,                          // Shopp session cookie name
-			$this->session(),                              // Generated session id
-			false,                                         // Expiration (false makes it expire with the session)
-			COOKIEPATH,                                    // Path
-			COOKIE_DOMAIN,                                 // Domain
-			false,                                         // Secure
+			SHOPP_SESSION_COOKIE,						  // Shopp session cookie name
+			$this->session(),							  // Generated session id
+			false,										 // Expiration (false makes it expire with the session)
+			COOKIEPATH,									// Path
+			COOKIE_DOMAIN,								 // Domain
+			false,										 // Secure
 			apply_filters('shopp_httponly_session', false) // HTTP only
 		);
 	}
-	
+
 	/**
 	 * Determine whether Shopp should cook a new session.
 	 *
@@ -249,7 +249,7 @@ abstract class ShoppSessionFramework {
 		if ( false === $this->data )
 			return false; // Encryption failed because of no SSL, do not save
 
-        do_action('shopp_session_save');
+		do_action('shopp_session_save');
 
 		$data = sDB::escape( addslashes(serialize($this->data)) );
 		$this->encrypt($data);
@@ -357,7 +357,7 @@ abstract class ShoppSessionFramework {
 	protected function create ( $session ) {
 		if ( ! $this->cookable() )
 			return true;
-		
+
 		$now = current_time('mysql');
 		$query = "INSERT $this->_table SET session='$session',data='',ip='$this->ip',created='$now',modified='$now'";
 		return sDB::query($query);
@@ -471,18 +471,18 @@ abstract class ShoppSessionFramework {
 				$entropy = '';
 		}
 
-	    $entropy .= uniqid(mt_rand(), true);
+		$entropy .= uniqid(mt_rand(), true);
 
 		// Check for open_basedir restrictions
 		$openbasedir = false === strpos(ini_get('open_basedir'), DIRECTORY_SEPARATOR);
 
 		// Try adding entropy from the Unix random number generator
-	    if ( $openbasedir && @is_readable('/dev/urandom') && $h = fopen('/dev/urandom', 'rb') ) {
+		if ( $openbasedir && @is_readable('/dev/urandom') && $h = fopen('/dev/urandom', 'rb') ) {
 			if ( function_exists('stream_set_read_buffer') )
 				stream_set_read_buffer($h, 0);
-	        $entropy .= @fread($h, 64);
-	        fclose($h);
-	    }
+			$entropy .= @fread($h, 64);
+			fclose($h);
+		}
 
 		// Try adding entropy from the Windows random number generator
 		if ( class_exists('COM') ) {
@@ -494,7 +494,7 @@ abstract class ShoppSessionFramework {
 
 		return $entropy;
 	}
-		
+
 	private function setcookie($name, $value, $expires, $path, $domain, $secure, $httponly) {
 		if ( PHP_SAPI === 'cli' ) {
 			$_COOKIE[ $name ] = $value;

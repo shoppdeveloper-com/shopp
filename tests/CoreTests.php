@@ -618,6 +618,21 @@ class CoreTests extends ShoppTestCase {
 		$_SERVER['HTTP_USER_AGENT'] = 'Googlebot';
 		$this->assertTrue(Shopp::is_robot());
 
+		include('data/robots.php');
+
+		$true = 0;
+		$false = array();
+		$total = 0;
+		foreach ( $UAs as $UA ) {
+			$_SERVER['HTTP_USER_AGENT'] = $UA;
+			if ( Shopp::is_robot() )
+				$true++;
+			else $false[] = $UA;
+			$total++;
+		}
+
+		$this->assertTrue($true / $total > 0.8, "Failed to detect over 80% of robots in the sample user-agent data.\n" . join("\n", $false) . "\n" . count($false) . " failed. $true out of $total passed (" . round($true/$total * 100, 1).  "%). ");
+
 		$_SERVER['HTTP_USER_AGENT'] = $restore;
 	}
 
