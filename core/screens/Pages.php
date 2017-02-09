@@ -129,7 +129,7 @@ class ShoppPagesSettingsTable extends ShoppAdminTable {
 	}
 
 	public function column_default( $Item ) {
-		echo '.';
+		return '.';
 	}
 
 	public function column_title( $Item ) {
@@ -137,20 +137,20 @@ class ShoppPagesSettingsTable extends ShoppAdminTable {
 
 		$edit_link = wp_nonce_url(add_query_arg('edit', $Item->id), 'shopp-settings-pages');
 
-		echo '<a class="row-title edit" href="' . $edit_link . '" title="' . Shopp::__('Edit') . ' &quot;' . esc_attr($title) . '&quot;">' . esc_html($title) . '</a>';
+		return '<a class="row-title edit" href="' . $edit_link . '" title="' . Shopp::__('Edit') . ' &quot;' . esc_attr($title) . '&quot;">' . esc_html($title) . '</a>';
 
-		echo $this->row_actions( array(
+		return $this->row_actions( array(
 			'edit' => '<a class="edit" href="' . $edit_link . '">' . __( 'Edit' ) . '</a>'
 		) );
 
 	}
 
 	public function column_slug( $Item ) {
-		echo esc_html($Item->slug);
+		return esc_html($Item->slug);
 	}
 
 	public function column_description( $Item ) {
-		echo esc_html($Item->description);
+		return esc_html($Item->description);
 	}
 
 } // class ShoppPagesSettingsTable
