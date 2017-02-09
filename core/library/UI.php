@@ -324,7 +324,7 @@ class ShoppAdminListTable extends WP_List_Table {
 
 		if ( !empty( $columns ) ) {
 			$this->_columns = $columns;
-			add_filter( 'manage_' . $this->screen->id . '_columns', array( $this, 'get_columns' ), 0 );
+			add_filter( 'manage_' . $this->screen->id . '_columns', array( &$this, 'get_columns' ) );
 		}
 
 	}
