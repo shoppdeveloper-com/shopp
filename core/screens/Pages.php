@@ -53,12 +53,12 @@ class ShoppScreenPages extends ShoppSettingsScreenController {
 		include $this->ui('pages.php');
 
 	}
-	
+
 	public function url ( $params = array() ) {
 		$url = parent::url($params);
 		return remove_query_arg('edit', $url);
 	}
-	
+
 
 } // class ShoppScreenPages
 
@@ -87,7 +87,7 @@ class ShoppPagesSettingsTable extends ShoppAdminTable {
 			$page['id'] = $name;
 			$this->items[ $name ] = (object) array_merge($template, $page);
 		}
-		
+
 		$per_page = 25;
 		$total = count($this->items);
 		$this->set_pagination_args( array(
@@ -124,12 +124,12 @@ class ShoppPagesSettingsTable extends ShoppAdminTable {
 			'${slug}' => $Item->slug,
 			'${description}' => $Item->description
 		);
-		
+
 		echo ShoppUI::template($this->editor, $data);
 	}
 
 	public function column_default( $Item ) {
-		return '.';
+		return '';
 	}
 
 	public function column_title( $Item ) {

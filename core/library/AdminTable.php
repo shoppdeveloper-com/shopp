@@ -1100,7 +1100,7 @@ abstract class ShoppAdminTable extends ShoppRequestFramework {
 				$style = ' style="display:none;"';
 
 			$attributes = "$class$style";
-			$attributes = apply_filters('shopp_{$this->screen->id}_column_{$column_name}_wrap_attributes', $attributes);
+			$attributes = apply_filters('shopp_{$this->screen->id}_column_{$column_name}_attributes', $attributes);
 
 			$content = '';
 			$wrap_open = "<td $attributes>";
