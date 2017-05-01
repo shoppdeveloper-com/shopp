@@ -58,7 +58,7 @@ class ShoppAdminSettings extends ShoppAdminPostController {
 class ShoppSettingsScreenController extends ShoppScreenController {
 
 	public $template = false;
-
+    
 	public function title () {
 		if ( isset($this->title) )
 			return $this->title;
@@ -165,9 +165,14 @@ class ShoppSettingsScreenController extends ShoppScreenController {
 	public function posted () {
 		parent::posted();
 		$this->posted = $this->form;
-
+        
+        $save = $this->form('save'); // Keep save button state
+        
 		if ( ! empty($_POST['settings']) )
 			$this->form = ShoppRequestProcessing::process($_POST['settings'], $this->defaults);
+        
+        if ( ! empty($save) )
+            $this->form['save'] = true;
 
 		return true;
 	}

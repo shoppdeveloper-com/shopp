@@ -72,7 +72,7 @@ abstract class ShoppScreenController extends ShoppRequestFormFramework {
 		// Setup notices before actions and process ops
 		Shopping::restore('admin_notices', $this->notices);
 		add_action('shopp_admin_notices', array($this, 'notices'));
-
+        
 		// Parse query request
 		if ( $this->query() ) {
 			// Flag new model requests

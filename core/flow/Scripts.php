@@ -16,13 +16,14 @@ defined( 'WPINC' ) || header( 'HTTP/1.1 403' ) & exit; // Prevent direct access
 class ShoppScripts extends WP_Scripts {
 
 	public function __construct() {
-		do_action_ref_array( 'shopp_default_scripts', array($this) );
+		do_action('shopp_default_scripts', $this);
 
 		add_action('wp_enqueue_scripts', array($this, 'wp_dependencies'), 1);
 		add_action('admin_head', array($this, 'wp_dependencies'), 1);
 
 		add_action('wp_head', array($this, 'print_head_scripts'), 15);
 		add_action('admin_head', array($this, 'print_head_scripts'), 15);
+        
 		add_action('wp_footer', array($this, 'print_footer_scripts'), 15);
 		add_action('admin_footer', array($this, 'print_footer_scripts'), 15);
 
@@ -181,7 +182,7 @@ class ShoppScripts extends WP_Scripts {
 
 } // END class ShoppScripts
 
-function shopp_default_scripts (&$scripts) {
+function shopp_default_scripts ($scripts) {
 
 	$script = basename(__FILE__);
 	$schema = ( !empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off' ) ? 'https://' : 'http://';
