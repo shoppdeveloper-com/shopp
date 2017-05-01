@@ -63,10 +63,11 @@ class ShoppAdminCategories extends ShoppAdminPostController {
 				$deleted = $DeletedCategory->name;
 				$DeletedCategory->delete();
 			}
-			if ( 1 == $total ) $this->notice(Shopp::__('Deleted %s category.', "<strong>$deleted</strong>"));
-			else $this->notice(Shopp::__('Deleted %s categories.', "<strong>$total</strong>"));
+			// TODO Fix $this->notice() calls which can't happen from here (notice() is a ScreenController method, not Admin router method)
+			// $this->notice( 1 == $total ? Shopp::__('Deleted %s category.', "<strong>$deleted</strong>") :
+			// 							 Shopp::__('Deleted %s categories.', "<strong>$total</strong>") );
 
-			$reset = array('selected' => null, 'action' => null, 'id' => null, '_wpnonce' => null, );
+			$reset = array('selected' => null, 'action' => null, 'next' => null, 'id' => null, '_wpnonce' => null, );
 			$redirect = add_query_arg(array_merge($_GET, $reset), $adminurl);
 			Shopp::redirect( $redirect );
 			exit;
@@ -212,6 +213,7 @@ class ShoppAdminCategories extends ShoppAdminPostController {
 
 		do_action_ref_array('shopp_category_saved', array($Category));
 
+		// TODO fix notice() call
 		// $this->notice(Shopp::__('%s category saved.', '<strong>' . $Category->name . '</strong>'));
 
 	}
@@ -221,55 +223,6 @@ class ShoppAdminCategories extends ShoppAdminPostController {
 class ShoppScreenCategories extends ShoppScreenController {
 
 	public $worklist = array();
-
-	/**
-	 * Categorize constructor
-	 *
-	 * @return void
-	 * @author Jonathan Davis
-	 **/
-	// public function __construct () {
-	// 	parent::__construct();
-	//
-	// 	Shopping::restore('worklist', $this->worklist);
-	//
-	// 	if ('shopp-tags' == $_GET['page']) {
-	// 		wp_redirect(add_query_arg(array('taxonomy'=>ProductTag::$taxon), admin_url('edit-tags.php')));
-	// 		return;
-	// 	}
-	//
-	// 	if (!empty($_GET['id']) && !isset($_GET['a'])) {
-	//
-	// 		wp_enqueue_script('postbox');
-	// 		if ( user_can_richedit() ) {
-	// 			wp_enqueue_script('editor');
-	// 			wp_enqueue_script('quicktags');
-	// 			add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 20 );
-	// 		}
-	//
-	// 		shopp_enqueue_script('colorbox');
-	// 		shopp_enqueue_script('editors');
-	// 		shopp_enqueue_script('category-editor');
-	// 		shopp_enqueue_script('priceline');
-	// 		shopp_enqueue_script('ocupload');
-	// 		shopp_enqueue_script('swfupload');
-	// 		shopp_enqueue_script('shopp-swfupload-queue');
-	//
-	// 		do_action('shopp_category_editor_scripts');
-	// 		add_action('admin_head',array($this,'layout'));
-	// 	} elseif (!empty($_GET['a']) && $_GET['a'] == 'arrange') {
-	// 		shopp_enqueue_script('category-arrange');
-	// 		do_action('shopp_category_arrange_scripts');
-	// 		add_action('admin_print_scripts',array($this,'arrange_cols'));
-	// 	} elseif (!empty($_GET['a']) && $_GET['a'] == 'products') {
-	// 		shopp_enqueue_script('products-arrange');
-	// 		do_action('shopp_category_products_arrange_scripts');
-	// 		add_action('admin_print_scripts',array($this,'products_cols'));
-	// 	} else add_action('admin_print_scripts',array($this,'columns'));
-	// 	do_action('shopp_category_admin_scripts');
-	//
-	// 	add_action('load-' . $this->id, array($this, 'workflow'));
-	// }
 
 	/**
 	 * Parses admin requests to determine which interface to display
