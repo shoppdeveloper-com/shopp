@@ -66,10 +66,7 @@ Thank you for using Shopp! E-commerce just got a little easier and more secure. 
 				'shopp-welcome' => __('What&#8217;s New'),
 				'shopp-credits' => __('Credits'),
 			));
-		?>
-
-		<?php
-	}
+			}
 
 	public function credits () {
 		$Shopp = Shopp::object();
