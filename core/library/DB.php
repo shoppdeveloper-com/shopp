@@ -242,7 +242,7 @@ class sDB extends SingletonFramework {
 				return $timestamp; // Ignore already properly formatted strings
 
 		// Check > 0 to prevent 0 from becoming epoch datetime and passthrough negative integers
-		if ( is_int($timestamp) && $timestamp > 0 ) 
+		if ( intval($timestamp) > 0 )
 				return date('Y-m-d H:i:s', $timestamp);
 
 		return $datetime;
