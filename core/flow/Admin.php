@@ -384,6 +384,7 @@ class ShoppAdminPostController extends ShoppAdminController {
 
 		// Get the query request
 		$this->query();
+        $this->posted();
 
 		// Setup the screen controller
 		$ControllerClass = $this->route();
@@ -399,6 +400,7 @@ class ShoppAdminPostController extends ShoppAdminController {
 		$screen = ShoppAdmin::screen();
 		if ( $screen == $this->request('post_type') )
 			$screen = $pagenow;
+        
 		add_action('load-' . $screen, array($this, 'help'));
 		add_action('load-' . $screen, array($this, 'layout'));
 		add_action('load-' . $screen, array($this, 'maintenance'));
