@@ -936,7 +936,12 @@ abstract class ShoppDatabaseObject implements Iterator {
 
 		$map = ! empty($this->_map) ? array_flip($this->_map) : array();
 
-		$Tables = $Settings->available() ? $Settings->get('data_model') : array();
+        $Tables = array();
+        if ( $Settings->available() ) {
+            $datamodel = $Settings->get('data_model');
+            if ( ! empty($datamodel) )
+                $Tables = $datamodel;
+        }
 
 		if ( isset($Tables[ $this->_table ]) ) {
 			$this->_datatypes = $Tables[ $this->_table ]->_datatypes;
