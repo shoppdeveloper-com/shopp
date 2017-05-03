@@ -1109,9 +1109,9 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 	public static function recent_shoppers ( $result, $options, $O ) {
 		$defaults = array(
 			'abbr' => 'firstname',
-			'city' => true,
-			'state' => true,
-			'avatar' => true,
+			'city' => 'on',
+			'state' => 'on',
+			'avatar' => 'on',
 			'size' => 48,
 			'show' => 5
 		);
@@ -1131,11 +1131,11 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 			else $name = $shopper->firstname{0} . ". $shopper->lastname";
 
 			$img = '';
-			if ( $avatar ) $img = get_avatar($shopper->email, $size, '', $name);
+			if ( Shopp::str_true($avatar) ) $img = get_avatar($shopper->email, $size, '', $name);
 
 			$loc = '';
-			if ( $state || $province ) $loc = $shopper->state;
-			if ( $city ) $loc = "$shopper->city, $loc";
+			if ( Shopp::str_true($state) || Shopp::str_true($province) ) $loc = $shopper->state;
+			if ( Shopp::str_true($city) ) $loc = $shopper->city . ( empty($loc) ? '' : ", $loc");
 
 			$_[] = "<li><div>$img</div>$name <em>$loc</em></li>";
 		}
