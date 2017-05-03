@@ -1329,8 +1329,10 @@ abstract class ShoppDatabaseObject implements Iterator {
 	 * @param array $ignores (optional) List of property names to ignore copying from
 	 * @return void
 	 **/
-	public function copydata ( $data, $prefix = '', array $ignores = array('_datatypes', '_table', '_key', '_lists', '_map', 'id', 'created', 'modified') ) {
-		if ( ! is_array($ignores) ) $ignores = array();
+	public function copydata ( $data, $prefix = '', $ignores = false ) {
+		if ( ! is_array($ignores) || $ignores === false )
+			$ignores = array('_datatypes', '_table', '_key', '_lists', '_map', 'id', 'created', 'modified');
+
 		$properties = is_object($data) ? get_object_vars($data) : $data;
 		foreach ( (array)$properties as $property => $value ) {
 			$property = $prefix . $property;
@@ -1339,6 +1341,12 @@ abstract class ShoppDatabaseObject implements Iterator {
 		}
 	}
 
+	/**
+	 * Clear all of the data properties for the current object
+	 *
+	 * @since 1.0
+	 * @return void
+	 **/
 	public function clear () {
 		$ObjectClass = get_class($this);
 		$new = new $ObjectClass();
@@ -1511,32 +1519,49 @@ class WPDatabaseObject extends ShoppDatabaseObject {
  * @package DB
  **/
 class WPShoppObject extends WPDatabaseObject {
+
+	/* @var	string The post type name for this object */
 	static $posttype = 'shopp_post';
 
+	/**
+	 * Handles loading a WPShoppObject
+	 *
+	 * @return void
+	 **/
 	public function load () {
 		$args = func_get_args();
-		if (empty($args[0])) return false;
+		if ( empty($args[0]) ) return false;
 
-		if (count($args) == 2) {
-			list($id,$key) = $args;
-			if (empty($key)) $key = $this->_key;
+		if ( count($args) == 2 ) {
+			list($id, $key) = $args;
+			if ( empty($key) ) $key = $this->_key;
 			$p = array($key => $id);
 		}
-		if (is_array($args[0])) $p = $args[0];
+		if ( is_array($args[0]) ) $p = $args[0];
 
 		$class = get_class($this);
-		$p['post_type'] = get_class_property($class,'posttype');
+		$p['post_type'] = get_class_property($class, 'posttype');
 
 		parent::load($p);
 	}
 
+	/**
+	 * Defines the labels for the post type object
+	 *
+	 * @return array The list of labels
+	 **/
 	public static function labels () {
 		return array(
-			'name' => __('Posts','Shopp'),
-			'singular_name' => __('Post','Shopp')
+			'name' => Shopp::__('Posts'),
+			'singular_name' => Shopp::__('Post')
 		);
 	}
 
+	/**
+	 * Defines the capabilities for managing this post type object
+	 *
+	 * @return array List of defined capabilities
+	 **/
 	public static function capabilities () {
 		return apply_filters( 'shopp_product_capabilities', array(
 			'edit_post' => self::$posttype,
@@ -1544,6 +1569,11 @@ class WPShoppObject extends WPDatabaseObject {
 		) );
 	}
 
+	/**
+	 * Defines the editor support for this post type object
+	 *
+	 * @return array THe list of supported editor features
+	 **/
 	public static function supports () {
 		return array(
 			'title',
@@ -1551,8 +1581,15 @@ class WPShoppObject extends WPDatabaseObject {
 		);
 	}
 
-	public static function register ($class,$slug) {
-		$posttype = get_class_property($class,'posttype');
+	/**
+	 * Registers this post type object with WordPress
+	 *
+	 * @return void
+	 * @param string $class The class name for this object
+	 * @param string $slug The slug for the post type
+	 **/
+	public static function register ( $class, $slug ) {
+		$posttype = get_class_property($class, 'posttype');
 		register_post_type( $posttype, array(
 			'labels' => call_user_func(array($class, 'labels')),
 			'capabilities' => call_user_func(array($class, 'capabilities')),

@@ -660,15 +660,15 @@ class ShoppPurchase extends ShoppDatabaseObject {
 	 * @param array $ignores A list of properties to ignore
 	 * @return void
 	 **/
-	public function copydata ( $Object, $prefix = '', array $ignores = array() ) {
+	public function copydata ( $Object, $prefix = '', $ignores = false ) {
 
-		$ignores = array_merge(array('_datatypes', '_table', '_key', '_lists', 'id', 'created', 'modified'), $ignores);
+		$skipped = array('_datatypes', '_table', '_key', '_lists', 'id', 'created', 'modified');
 
-		foreach( get_object_vars($Object) as $property => $value ) {
-			$property = $prefix . $property;
-			if ( property_exists($this, $property) && ! in_array($property, $ignores) )
-				$this->{$property} = $value;
-		}
+		if ( is_array($ignores) )
+			$ignores = array_merge($skipped, $ignores);
+		else $ignores = $skipped;
+
+		parent::copydata($Object, $prefix, $ignores);
 	}
 
 	public static function exportcolumns () {
