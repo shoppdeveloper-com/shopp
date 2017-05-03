@@ -465,25 +465,25 @@ class ShoppTaxesRatesTable extends ShoppAdminTable {
 		$edit_link = wp_nonce_url(add_query_arg('id', $id), 'shopp_edit_taxrate');
 		$delete_link = wp_nonce_url(add_query_arg('delete', $id), 'shopp_delete_taxrate');
 
-		echo '<a class="row-title edit" href="' . esc_url($edit_link) . '" title="' . Shopp::__('Edit') . ' &quot;' . esc_attr($label) . '&quot;">' . esc_html($label) . '</a>';
-		echo $this->row_actions( array(
-			'edit' => '<a class="edit" href="' . $edit_link . '">' . __( 'Edit' ) . '</a>',
-			'delete' => '<a class="delete" href="' . $delete_link . '">' . __( 'Delete' ) . '</a>',
-		) );
+		return '<a class="row-title edit" href="' . esc_url($edit_link) . '" title="' . Shopp::__('Edit') . ' &quot;' . esc_attr($label) . '&quot;">' . esc_html($label) . '</a>' .
+                $this->row_actions( array(
+        			'edit' => '<a class="edit" href="' . $edit_link . '">' . __( 'Edit' ) . '</a>',
+        			'delete' => '<a class="delete" href="' . $delete_link . '">' . __( 'Delete' ) . '</a>',
+        		) );
 
 	}
 
 	public function column_local( $Item ) {
-		$this->checkbox($Item['haslocals'], $Item['haslocals'] ? Shopp::__('This tax setting has local tax rates defined.') : Shopp::__('No local tax rates are defined.'));
+		return $this->checkbox($Item['haslocals'], $Item['haslocals'] ? Shopp::__('This tax setting has local tax rates defined.') : Shopp::__('No local tax rates are defined.'));
 	}
 
 	public function column_conditional( $Item ) {
 		$conditionals = count($Item['rules']) > 0;
-		$this->checkbox($conditionals, $conditionals ? Shopp::__('This tax setting has conditional rules defined.') : Shopp::__('No conditions are defined for this tax rate.'));
+		return $this->checkbox($conditionals, $conditionals ? Shopp::__('This tax setting has conditional rules defined.') : Shopp::__('No conditions are defined for this tax rate.'));
 	}
 
 	protected function checkbox( $set, $title ) {
-		echo '<div class="checkbox ' . ( $set ? ' checked' : '' ) . '" title="' . esc_html($title) . '"><span class="hidden">' . esc_html($title) . '</div>';
+		return '<div class="checkbox ' . ( $set ? ' checked' : '' ) . '" title="' . esc_html($title) . '"><span class="hidden">' . esc_html($title) . '</div>';
 	}
 
 } // class ShoppTaxesRatesTable

@@ -242,7 +242,7 @@ class sDB extends SingletonFramework {
 				return $timestamp; // Ignore already properly formatted strings
 
 		// Check > 0 to prevent 0 from becoming epoch datetime and passthrough negative integers
-		if ( is_int($timestamp) && $timestamp > 0 ) 
+		if ( intval($timestamp) > 0 )
 				return date('Y-m-d H:i:s', $timestamp);
 
 		return $datetime;
@@ -936,7 +936,12 @@ abstract class ShoppDatabaseObject implements Iterator {
 
 		$map = ! empty($this->_map) ? array_flip($this->_map) : array();
 
-		$Tables = $Settings->available() ? $Settings->get('data_model') : array();
+        $Tables = array();
+        if ( $Settings->available() ) {
+            $datamodel = $Settings->get('data_model');
+            if ( ! empty($datamodel) )
+                $Tables = $datamodel;
+        }
 
 		if ( isset($Tables[ $this->_table ]) ) {
 			$this->_datatypes = $Tables[ $this->_table ]->_datatypes;
