@@ -730,6 +730,9 @@ class ShoppDiscountRule {
 	 **/
 	public function evaluate ( $subject ) {
 
+		// Ensure evaluate works correctly for encoded characters
+		$subject = array_map('htmlspecialchars_decode', $subject);
+
 		$property = $this->property;
 		$op = strtolower($this->logic);
 		$value = $this->value;
