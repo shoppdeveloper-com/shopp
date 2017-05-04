@@ -48,66 +48,67 @@ class ShoppProductThemeAPI implements ShoppAPI {
 	 * @internal
 	 **/
 	static $register = array(
-		'addon' => 'addon',
-		'addons' => 'addons',
-		'addtocart' => 'add_to_cart',
-		'availability' => 'availability',
-		'buynow' => 'buy_now',
-		'categories' => 'categories',
-		'category' => 'category',
-		'coverimage' => 'coverimage',
-		'description' => 'description',
-		'donation' => 'quantity',
-		'amount' => 'quantity',
-		'quantity' => 'quantity',
-		'found' => 'found',
-		'freeshipping' => 'free_shipping',
-		'gallery' => 'gallery',
-		'hasaddons' => 'has_addons',
-		'hascategories' => 'has_categories',
-		'hassavings' => 'has_savings',
-		'hasvariants' => 'has_variants',
-		'hasimages' => 'has_images',
-		'hasspecs' => 'has_specs',
+		'addon'           => 'addon',
+		'addons'          => 'addons',
+		'addtocart'       => 'add_to_cart',
+		'availability'    => 'availability',
+		'buynow'          => 'buy_now',
+		'categories'      => 'categories',
+		'category'        => 'category',
+		'coverimage'      => 'coverimage',
+		'description'     => 'description',
+		'donation'        => 'quantity',
+		'amount'          => 'quantity',
+		'quantity'        => 'quantity',
+		'found'           => 'found',
+		'freeshipping'    => 'free_shipping',
+		'gallery'         => 'gallery',
+		'hasaddons'       => 'has_addons',
+		'hascategories'   => 'has_categories',
+		'hassavings'      => 'has_savings',
+		'hasvariants'     => 'has_variants',
+		'hasimages'       => 'has_images',
+		'hasspecs'        => 'has_specs',
 		'hassubscription' => 'has_subscription',
-		'hastags' => 'has_tags',
-		'id' => 'id',
-		'image' => 'image',
-		'thumbnail' => 'image',
-		'images' => 'images',
-		'incart' => 'in_cart',
-		'incategory' => 'in_category',
-		'input' => 'input',
-		'isfeatured' => 'is_featured',
-		'link' => 'url',
-		'url' => 'url',
-		'name' => 'name',
-		'onsale' => 'on_sale',
-		'outofstock' => 'out_of_stock',
-		'price' => 'price',
-		'saleprice' => 'saleprice',
-		'relevance' => 'relevance',
-		'savings' => 'savings',
-		'schema' => 'schema',
-		'slug' => 'slug',
-		'spec' => 'spec',
-		'specs' => 'specs',
-		'summary' => 'summary',
-		'sku' => 'sku',
-		'stock' => 'stock',
-		'tag' => 'tag',
-		'tagged' => 'tagged',
-		'tags' => 'tags',
-		'taxrate' => 'taxrate',
-		'type' => 'type',
-		'variant' => 'variant',
-		'variants' => 'variants',
-		'weight' => 'weight',
+		'hastags'         => 'has_tags',
+		'id'              => 'id',
+		'image'           => 'image',
+		'thumbnail'       => 'image',
+		'images'          => 'images',
+		'incart'          => 'in_cart',
+		'incategory'      => 'in_category',
+		'input'           => 'input',
+		'isfeatured'      => 'is_featured',
+		'link'            => 'url',
+		'url'             => 'url',
+		'name'            => 'name',
+		'onsale'          => 'on_sale',
+		'outofstock'      => 'out_of_stock',
+		'price'           => 'price',
+		'saleprice'       => 'saleprice',
+		'processing'      => 'processing',
+		'relevance'       => 'relevance',
+		'savings'         => 'savings',
+		'schema'          => 'schema',
+		'slug'            => 'slug',
+		'spec'            => 'spec',
+		'specs'           => 'specs',
+		'summary'         => 'summary',
+		'sku'             => 'sku',
+		'stock'           => 'stock',
+		'tag'             => 'tag',
+		'tagged'          => 'tagged',
+		'tags'            => 'tags',
+		'taxrate'         => 'taxrate',
+		'type'            => 'type',
+		'variant'         => 'variant',
+		'variants'        => 'variants',
+		'weight'          => 'weight',
 
 		// Deprecated
-		'hasvariations' => 'has_variants',
-		'variation' => 'variant',
-		'variations' => 'variants',
+		'hasvariations'   => 'has_variants',
+		'variation'       => 'variant',
+		'variations'      => 'variants',
 	);
 
 	/**
@@ -1426,6 +1427,38 @@ class ShoppProductThemeAPI implements ShoppAPI {
 
 		if ( is_array($prices) ) return join($separator, $prices);
 		else return $prices;
+	}
+
+	/**
+	 * Provides the processing time of the product
+	 *
+	 * @api `shopp('product.processing')`
+	 * @since 1.3
+	 *
+	 * @param string       $result  The output
+	 * @param array        $options The options
+	 * @param ShoppProduct $O       The working object
+	 * @return string|boolean The product processing time markup | False when turned off
+	 **/
+	public static function processing ( $result, $options, $O ) {
+		if ( 'off' == $O->processing ) return false;
+
+		$period  = array( 'd' => Shopp::__('day'), 'w' => Shopp::__('week'), 'm' => Shopp::__('month'));
+		$periods = array( 'd' => Shopp::__('days'), 'w' => Shopp::__('weeks'), 'm' => Shopp::__('months'));
+
+		$minprocess = 0;
+		$maxprocess = 0;
+		$processes  = array('minprocess', 'maxprocess');
+
+		foreach ($processes as $process) {
+			$timespan = preg_split('/(?<=[0-9])(?=[a-z]+)/i', $O->$process);
+			if ( $timespan[0] == 1 )
+				$$process = $timespan[0] . ' ' . $period[ $timespan[1] ];
+			else
+				$$process = $timespan[0] . ' ' . $periods[ $timespan[1] ];
+		}
+
+		return $minprocess . ' - ' . $maxprocess;
 	}
 
 	/**
