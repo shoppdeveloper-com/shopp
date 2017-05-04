@@ -421,7 +421,6 @@ abstract class ShoppSessionFramework {
 
 		$key = $_COOKIE[ SHOPP_SECURE_KEY ];
 
-		$db = sDB::object();
 		$data = sDB::query("SELECT AES_DECRYPT('" . sDB::str_escape(substr($data, $BOF)) . "','$key') AS data", 'auto', 'col', 'data');
 
 	}
