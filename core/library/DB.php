@@ -251,32 +251,45 @@ class sDB extends SingletonFramework {
 	/**
 	 * Escape the contents of data for safe insertion into the database
 	 *
-	 * @author Jonathan Davis
 	 * @since 1.0
-	 *
 	 * @param string|array|object $data Data to be escaped
 	 * @return string Database-safe data
 	 **/
 	public static function escape ( $data ) {
-		// Prevent double escaping by stripping any existing escapes out
-		if ( is_array($data) ) array_map(array(__CLASS__, 'escape'), $data);
-		elseif ( is_object($data) ) {
+		if ( is_array($data) )
+			array_map(array(__CLASS__, 'escape'), $data);
+		elseif ( is_object($data) )
 			foreach ( get_object_vars($data) as $p => $v )
 				$data->$p = self::escape($v);
-		} else {
-			$db = sDB::get();
-			$data = self::unescape($data); // Prevent double-escapes
-			$data = $db->api->escape($data);
-		}
+		else self::unescape( self::str_escape($data) );
 		return $data;
 	}
 
+	/**
+	 * Unescape already escaped data
+	 *
+	 * @since 1.1
+	 * @param mixed $data The data to unescape
+	 * @return string The unescaped data
+	 **/
 	protected static function unescape ( $data ) {
 	    return str_replace(
-			array("\\\\", "\\0", "\\n", "\\r", "\Z",   "\'", '\"'),
+			array("\\\\", "\\0", "\\n", "\\r", "\\Z", "\\'", '\\"'),
 			array("\\",   "\0",  "\n",  "\r",  "\x1a", "'",  '"'),
 			$data
 		);
+	}
+
+	/**
+	 * Escape a single string
+	 *
+	 * @since 1.4
+	 * @param string $data The string to escape
+	 * @return string The escaped string
+	 **/
+	public static function str_escape ( $string ) {
+		$db = sDB::get();
+		return $db->api->escape($string);
 	}
 
 	/**
