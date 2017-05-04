@@ -261,7 +261,8 @@ class sDB extends SingletonFramework {
 		elseif ( is_object($data) )
 			foreach ( get_object_vars($data) as $p => $v )
 				$data->$p = self::escape($v);
-		else self::unescape( self::str_escape($data) );
+		else // Unescape to prevent double escapes
+			$data = self::str_escape( self::unescape($data) );
 		return $data;
 	}
 
@@ -274,7 +275,7 @@ class sDB extends SingletonFramework {
 	 **/
 	protected static function unescape ( $data ) {
 	    return str_replace(
-			array("\\\\", "\\0", "\\n", "\\r", "\\Z", "\\'", '\\"'),
+			array("\\\\", "\\0", "\\n", "\\r", "\\Z", "\\'", '\"'),
 			array("\\",   "\0",  "\n",  "\r",  "\x1a", "'",  '"'),
 			$data
 		);
