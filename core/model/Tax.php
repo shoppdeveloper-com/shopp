@@ -114,7 +114,7 @@ class ShoppTax {
 			foreach ( $eukeys as $eukey )
 				unset($settings[ $eukey ]) ;
 
-		if ( count($eukeys) > 1 ) {
+		if ( count($eurates) > 1 ) {
 			//Multiple EUVAT detected, unset least specific ones
 			$arr = array();
 			foreach ( $eukeys as $eukey ){
