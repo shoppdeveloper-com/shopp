@@ -641,12 +641,12 @@ class ShoppCartItem {
 		// Update stock in the database
 		$pricetable = ShoppDatabaseObject::tablename(ShoppPrice::$table);
 		foreach ( $ids as $priceline ) {
-			db::query("UPDATE $pricetable SET stock=stock-{$this->quantity} WHERE id='{$priceline}'");
+			sDB::query("UPDATE $pricetable SET stock=stock-{$this->quantity} WHERE id='{$priceline}'");
 		}
 
 		// Force summary update to get new stock warning levels on next load
 		$summarytable = ShoppDatabaseObject::tablename(ProductSummary::$table);
-		db::query("UPDATE $summarytable SET modified='".ProductSummary::$_updates."' WHERE product='{$this->product}'");
+		sDB::query("UPDATE $summarytable SET modified='".ProductSummary::$_updates."' WHERE product='{$this->product}'");
 
 		// Update
 		if ( ! empty($this->addons) ) {
@@ -715,7 +715,7 @@ class ShoppCartItem {
 			}
 		}
 
-		$result = db::query("SELECT min(stock) AS stock FROM $table WHERE 0 < FIND_IN_SET(id,'".join(',',$ids)."')");
+		$result = sDB::query("SELECT min(stock) AS stock FROM $table WHERE 0 < FIND_IN_SET(id,'".join(',',$ids)."')");
 		if (isset($result->stock)) return $result->stock;
 
 		return $this->option->stock;
