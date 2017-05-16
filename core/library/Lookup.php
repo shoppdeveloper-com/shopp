@@ -232,7 +232,7 @@ class ShoppLookup {
 	}
 
 	public static function country_euvat () {
-		$_ = array( // Includes 28 core member states plus dependent territories
+		$_ = array( // Includes 28 core member countries plus dependent territories
 			'AT','BE','BG','CY','CZ','DE','DK','ES','ET','EE',
 			'FI','FR','GB','GR','HR','HU','IE','IM','IT','LB',
 			'LT','LU','LV','MT','NL','PL','PT','RO','SE','SI',
