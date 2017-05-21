@@ -322,7 +322,7 @@ class ShoppTaxesRatesTable extends ShoppAdminTable {
 
 		$specials = array(ShoppTax::ALL => Shopp::__('All Markets'));
 
-		if ( ShoppTax::euvat(false, ShoppBaseLocale()->country(), ShoppTax::EUVAT) )
+		if ( ShoppTax::euvat(ShoppBaseLocale()->country(), ShoppTax::EUVAT) )
 			$specials[ ShoppTax::EUVAT ] = Shopp::__('European Union');
 
 		$this->countries = array_filter(array_merge($specials, (array) shopp_setting('target_markets')));

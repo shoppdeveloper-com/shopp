@@ -410,8 +410,16 @@ class ShoppTax {
 
 	}
 
-	public static function euvat ( $result, $country, $setting ) {
-		if ( self::EUVAT != $setting ) return $result; // Passthru
+	/**
+	 * Determines if EU VAT applies in a given country and setting
+	 *
+	 * @since 1.3
+	 * @param string $country The country code to check
+	 * @param string $setting The tax rate setting country code
+	 * @return bool True if EU VAT applies to the country, false otherwise
+	 **/
+	public static function euvat ( $country, $setting ) {
+		if ( self::EUVAT != $setting ) return false;
 		return in_array($country, Lookup::country_euvat());
 	}
 
