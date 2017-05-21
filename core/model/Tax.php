@@ -87,7 +87,7 @@ class ShoppTax {
 			if ( ! $this->taxrules($rules, $logic) ) continue;
 
 			// Capture fall back tax rates
-			if ( empty($zone) && ( self::ALL == $country ) ) {
+			if ( empty($zone) && ( self::ALL == $country || self::EUVAT == $country ) ) {
 				$fallbacks[] = $setting;
 				continue;
 			}
@@ -259,7 +259,6 @@ class ShoppTax {
 	 * @return array An associative array containing the country, zone and locale
 	 **/
 	public function location ( $country = null, $state = null, $locale = null ) {
-
 		$address = apply_filters('shopp_taxable_address', array(
 			'country' => $country,
 			'zone' => $state,
@@ -296,19 +295,54 @@ class ShoppTax {
 		return (array)$baserates;
 	}
 
-	public static function adjustment ( $rates ) {
-
-		if ( ! shopp_setting_enabled('tax_inclusive') ) return 1;
+	/**
+	 * Provides an adjustment amount based on EU tax zone differences
+	 *
+	 * The adjustment amount is a +/- difference to apply to a
+	 * product or cart item price to account for the tax rate difference
+	 * between the base of operations tax rate that applies to the item
+	 * and the tax rate that applies to the current shipping location.
+	 *
+	 * @since 1.4
+	 * @param float $amount The taxable amount
+	 * @param array $rates The applicable tax rates for a taxable item
+	 * @return float The signed adjustment amount
+	 **/
+	public static function adjustment ( $amount, $rates ) {
+		if ( ! shopp_setting_enabled('tax_inclusive') ) return 0;
 
 		$baserates = ShoppTax::baserates();
 		$baserate = reset($baserates);
-		$appliedrate = reset($rates);
+		$appliedrate = self::appliedrate($rates);
 
 		$baserate = isset($baserate->rate) ? $baserate->rate : 0;
 		$appliedrate = isset($appliedrate->rate) ? $appliedrate->rate : 0;
 
-		return 1 + ($baserate - $appliedrate);
+		if ( $baserate == $appliedrate )
+			return 0;
 
+		$netamount = (float)$amount / (1 + $baserate);
+		$appliedtax = ( $netamount * $appliedrate );
+
+		return ( $netamount + $appliedtax ) - $amount;
+	}
+
+	/**
+	 * Provides a single applied rate from a list of taxrates
+	 *
+	 * Some tax amounts will get annulled when a tax setting is superceded by
+	 * other tax rate settings. It is an important part of how the TaxTotal system
+	 * detects differences to recalculate, but in some scenarios, these
+	 * anulled rates need ignored to find the actual applicable tax rate.
+	 *
+	 * @since 1.4
+	 * @param array $rates The list of applicable item tax rates
+	 * @return ShoppItemTax The applied rate
+	 **/
+	public static function appliedrate ( array $rates ) {
+		foreach ( $rates as $label => $rate )
+			if ( ! is_null($rate->amount) )
+				return $rate;
 	}
 
 	/**
@@ -337,8 +371,7 @@ class ShoppTax {
 	 * @return float The total tax amount
 	 **/
 	public static function calculate ( array &$rates, $taxable ) {
-
-		$compound = 0;
+		$compound = $taxable;
 		$total = 0;
 		$inclusive = shopp_setting_enabled('tax_inclusive');
 		foreach ( $rates as $label => $taxrate ) {
@@ -348,17 +381,10 @@ class ShoppTax {
 			$taxrate->amount = 0; // Reset the captured tax amount @see Issue #2430
 
 			// Calculate tax amount
-			if ( $inclusive ) $tax = $taxable - ( $taxable / (1 + $taxrate->rate) );
-			else $tax = $taxable * $taxrate->rate;
+			$tax = self::tax($taxable, $taxrate->rate);
 
 			if ( $taxrate->compound ) {
-
-				if ( 0 == $compound ) $compound = $taxable;	// Set initial compound taxable amount
-				else {
-					if ( $inclusive ) $tax = $compound - ( $compound / (1 + $taxrate->rate) );
-					else $tax = ($compound * $taxrate->rate);	// Compounded tax amount
-				}
-
+				$tax = self::tax($compound, $taxrate->rate);
 				$compound += $tax;						 	// Set compound taxable amount for next compound rate
 			}
 
@@ -368,7 +394,25 @@ class ShoppTax {
 		}
 
 		return $total;
+	}
 
+	/**
+	 * Calculates the tax amount
+	 *
+	 * The tax calculation used is dependent on the inclsuive tax seeting
+	 *
+	 * @since 1.4
+	 * @param float $amount The amount to calculate tax against
+	 * @param float $rate The tax rate
+	 * @return float The tax amount
+	 **/
+	private static function tax ($amount, $rate) {
+		$inclusive = shopp_setting_enabled('tax_inclusive');
+
+		if ( $inclusive ) $tax = $amount - ( $amount / (1 + $rate) );
+		else $tax = $amount * $rate;
+
+		return $tax;
 	}
 
 	/**
@@ -399,7 +443,6 @@ class ShoppTax {
 	 * @return float $total
 	 **/
 	public function total ( array &$taxes, $quantity ) {
-
 		$total = 0;
 		foreach ( $taxes as $label => &$taxrate ) {
 			$taxrate->total = $taxrate->amount * $quantity;
@@ -407,7 +450,6 @@ class ShoppTax {
 		}
 
 		return (float)$total;
-
 	}
 
 	/**
@@ -423,6 +465,13 @@ class ShoppTax {
 		return in_array($country, Lookup::country_euvat());
 	}
 
+	/**
+	 * Ensures the working address is serialized in the session
+	 *
+	 * @since 1.3
+	 *
+	 * @return array The list of properties to serialize
+	 **/
 	public function __sleep () {
 		return array('address');
 	}

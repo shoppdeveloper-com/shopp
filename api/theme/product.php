@@ -2432,36 +2432,30 @@ new ProductOptionsMenus(<?php printf("'select%s.product%d.options'",$select_coll
 	 * @param float $amount The amount to add taxes to, or exclude taxes from
 	 * @param ShoppProduct $O The product to get properties from
 	 * @param boolean $istaxed Whether the amount can be taxed
-	 * @param boolean $taxoption The Theme API tax option given the the tag
-	 * @param array $taxrates A list of taxrates that apply to the product and amount
+	 * @param boolean $taxoption The Theme API tax option given the the tag to include or exclude taxes
+	 * @param array $taxrates (optional) A list of taxrates to apply to the product and amount (overriding the product applied taxes)
 	 * @return float The amount with tax added or tax excluded
 	 **/
 	private static function _taxed ( $amount, ShoppProduct $O, $istaxed, $taxoption = null, array $taxrates = array() ) {
 		if ( ! $istaxed ) return $amount;
 
-		if ( empty($taxrates) ) $taxrates = Shopp::taxrates($O);
-
-		if ( isset($taxoption) )
-			$taxoption = Shopp::str_true( $taxoption );
-
 		$inclusivetax = self::_inclusive_taxes($O);
-		if ( $inclusivetax ) {
-			$adjustment = ShoppTax::adjustment($taxrates);
-			if ( 1 != $adjustment && false !== $taxoption ) // Only adjust when taxes are not excluded @see #3041
-				return (float) ($amount / $adjustment);
-		}
 
-		// Handle inclusive/exclusive tax presentation options (product editor setting or api option)
-		// If the 'taxes' option is specified and the item either has inclusive taxes that apply,
-		// or the 'taxes' option is forced on (but not both) then handle taxes by either adding or excluding taxes
-		// This is an exclusive or known as XOR, the lesser known brother of Thor that gets left out of the family get togethers
-		if ( isset($taxoption) && ( $inclusivetax ^ $taxoption ) ) {
+		if ( empty($taxrates) )
+			$taxrates = Shopp::taxrates($O);
 
-			if ( $taxoption )
+		if ( isset($taxoption) ) { // Why are we providing the tax total, not the price amount when taxoption is true??
+
+			if ( Shopp::str_true( $taxoption ) )
 				return ShoppTax::calculate($taxrates, (float)$amount);
-			else return ShoppTax::exclusive($taxrates, (float)$amount);
+
+			if ( $inclusivetax ) // $taxoption is false, meaning they want the tax exclusive amount
+				return ShoppTax::exclusive($taxrates, (float)$amount);
 
 		}
+
+		if ( $inclusivetax )
+			$amount += ShoppTax::adjustment($amount, $taxrates, $O);
 
 		return $amount;
 	}

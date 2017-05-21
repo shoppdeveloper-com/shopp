@@ -493,7 +493,7 @@ class ShoppCart extends ListFramework {
 		// If the specified item doesn't exist, fail
 		if ( ! $this->exists($item) )
             return false;
-        
+
         // If nothing has changed, consider the change already successful
         if ( empty($addons) && $this->get($item)->product == $product && $this->get($item)->priceline == $pricing )
 			return true;
@@ -549,14 +549,12 @@ class ShoppCart extends ListFramework {
 	 * @author Jonathan Davis
 	 * @since 1.3
 	 *
-	 * @param ShoppCartItem $Item The cart item from shopp_cart_item_retotal
+	 * @param ShoppCartItem $Item The cart item from shopp_cart_item_taxes
 	 * @return void
 	 **/
 	public function itemtaxes ( ShoppCartItem $Item ) {
 
 		$itemid = $Item->fingerprint();
-		if ( ! $this->exists($itemid) ) return;
-
 		foreach ( $Item->taxes as $id => &$ItemTax )
 			$this->Totals->register( new OrderAmountItemTax( $ItemTax, $itemid ) );
 
@@ -632,7 +630,7 @@ class ShoppCart extends ListFramework {
 
 		if ( apply_filters( 'shopp_tax_shipping', shopp_setting_enabled('tax_shipping') ) ) {
 			$Totals->register( new OrderAmountShippingTax( $Totals->total('shipping') ) );
-		} else {			
+		} else {
 			$Totals->takeoff( OrderAmountShippingTax::$register, 'shipping' ); // if not applicable, make sure we scrub
 		}
 
@@ -641,7 +639,6 @@ class ShoppCart extends ListFramework {
 
 		// Apply credits to discount the order
 		$Discounts->credits();
-
 
 		if ( $Discounts->shipping() ) // If shipping discounts changed, recalculate shipping amount
 			$Totals->register( new OrderAmountShipping( array('id' => 'cart', 'amount' => $Shipping->calculate() ) ) );
