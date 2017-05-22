@@ -1400,8 +1400,8 @@ class ShoppProductThemeAPI implements ShoppAPI {
 			'disabled' => __('Currently unavailable', 'Shopp')
 		);
 		$options = array_merge($defaults, $options);
-		extract($options);
-
+		extract($options, EXTR_SKIP);
+        
 		if ( ! Shopp::str_true($O->sale) ) $property = 'price';
 
 		$levels = array('min', 'max');
@@ -2419,7 +2419,6 @@ new ProductOptionsMenus(<?php printf("'select%s.product%d.options'",$select_coll
 		foreach ( $levels as $level )
 			$$level = self::_taxed($$level, $O, isset($O->{$level}[ $property . '_tax' ]) ? $O->{$level}[ $property . '_tax' ] : true, $taxoption, $taxrates);
 
-
 		return array($min, $max);
 	}
 
@@ -2440,20 +2439,20 @@ new ProductOptionsMenus(<?php printf("'select%s.product%d.options'",$select_coll
 		if ( ! $istaxed ) return $amount;
 
 		$inclusivetax = self::_inclusive_taxes($O);
-
+        
 		if ( empty($taxrates) )
 			$taxrates = Shopp::taxrates($O);
 
-		if ( isset($taxoption) ) { // Why are we providing the tax total, not the price amount when taxoption is true??
+		if ( isset($taxoption) ) {
 
-			if ( Shopp::str_true( $taxoption ) )
-				return ShoppTax::calculate($taxrates, (float)$amount);
+			if ( ! Shopp::str_true( $taxoption ) )
+                return ShoppTax::exclusive($taxrates, (float)$amount);
 
 			if ( $inclusivetax ) // $taxoption is false, meaning they want the tax exclusive amount
-				return ShoppTax::exclusive($taxrates, (float)$amount);
+				ShoppTax::calculate($taxrates, (float)$amount);
 
 		}
-
+        
 		if ( $inclusivetax )
 			$amount += ShoppTax::adjustment($amount, $taxrates, $O);
 

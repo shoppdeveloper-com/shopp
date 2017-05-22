@@ -150,6 +150,7 @@ class TaxTests extends ShoppTestCase {
 				'haslocals' => false
 			)
 		);
+
 		shopp_set_setting('taxes','on');
 		shopp_set_setting('taxrates', serialize($args));
 

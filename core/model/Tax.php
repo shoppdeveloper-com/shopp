@@ -283,6 +283,13 @@ class ShoppTax {
 		$this->Customer = $Customer;
 	}
 
+	/**
+	 * Provides the base rate that applies to the given product
+	 *
+	 * @since 1.3
+	 * @param object $Item A compatible taxable object
+	 * @return array The list of applicable base tax rates
+	 **/
 	public static function baserates ( $Item = null ) {
 		// Get base tax rate
 		$BaseTax = new ShoppTax();
@@ -306,12 +313,13 @@ class ShoppTax {
 	 * @since 1.4
 	 * @param float $amount The taxable amount
 	 * @param array $rates The applicable tax rates for a taxable item
+	 * @param object $Item A compatible taxable object
 	 * @return float The signed adjustment amount
 	 **/
-	public static function adjustment ( $amount, $rates ) {
+	public static function adjustment ( $amount, $rates, $Item ) {
 		if ( ! shopp_setting_enabled('tax_inclusive') ) return 0;
 
-		$baserates = ShoppTax::baserates();
+		$baserates = ShoppTax::baserates($Item);
 		$baserate = reset($baserates);
 		$appliedrate = self::appliedrate($rates);
 
@@ -422,7 +430,7 @@ class ShoppTax {
 	 * @since 1.3
 	 *
 	 * @param array $rates A list of ShoppItemTax objects
-	 * @param float $$amount The amount including tax
+	 * @param float $amount The amount including tax
 	 * @return float The amount excluding tax
 	 **/
 	public static function exclusive ( array &$rates, $amount ) {
@@ -438,15 +446,15 @@ class ShoppTax {
 	 * @author Jonathan Davis
 	 * @since 1.3
 	 *
+	 * @param array $taxes the list of applicable ShoppItemTax entries
 	 * @param int $quantity The quantity to factor tax amounts by
-	 * @param array $rates the list of applicable ShoppItemTax entries
 	 * @return float $total
 	 **/
 	public function total ( array &$taxes, $quantity ) {
 		$total = 0;
-		foreach ( $taxes as $label => &$taxrate ) {
-			$taxrate->total = $taxrate->amount * $quantity;
-			$total += $taxrate->total;
+		foreach ( $taxes as $label => &$tax ) {
+			$tax->total = $tax->amount * $quantity;
+			$total += $tax->total;
 		}
 
 		return (float)$total;
