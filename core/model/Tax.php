@@ -47,8 +47,7 @@ class ShoppTax {
 	 * @return void
 	 **/
 	public function item ( $Item ) {
-		$Item = is_a($Item, 'ShoppTaxableItem') ? $Item : new ShoppTaxableItem($Item);
-		return $Item;
+		return new ShoppTaxableItem($Item);
 	}
 
 	/**
