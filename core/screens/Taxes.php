@@ -320,11 +320,11 @@ class ShoppTaxesRatesTable extends ShoppAdminTable {
 		foreach ( $rates as $index => $taxrate )
 			$this->items[ $index ] = array_merge(self::$template, array('id' => $index), $taxrate);
 
-		$specials = array(ShoppTax::ALL => Shopp::__('All Markets'));
-
-		if ( ShoppTax::euvat(ShoppBaseLocale()->country(), ShoppTax::EUVAT) )
-			$specials[ ShoppTax::EUVAT ] = Shopp::__('European Union');
-
+		$specials = array(
+            ShoppTax::ALL => Shopp::__('All Markets'),
+            ShoppTax::EUVAT => Shopp::__('European Union')
+        );
+        
 		$this->countries = array_filter(array_merge($specials, (array) shopp_setting('target_markets')));
 		$this->zones = 	ShoppLookup::country_zones();
 

@@ -10,6 +10,7 @@
 class TaxTests extends ShoppTestCase {
 
 	static function setUpBeforeClass () {
+		$Uniforms = shopp_add_product_category('Uniforms', 'For properly dressed Starfleet officers.');
 
 		$args = array(
 			'name' => 'USS Enterprise',
@@ -39,7 +40,7 @@ class TaxTests extends ShoppTestCase {
 				'Max Accommodations' => 800,
 				'Phaser Force Rating' => '2.5 MW',
 				'Torpedo Force Rating' => '9.7 isotons'
-				)
+			),
 		);
 
 		shopp_add_product($args);
@@ -65,8 +66,7 @@ class TaxTests extends ShoppTestCase {
 			'specs' => array(
 				'Class' => 'Class-F',
 				'Category' => 'Shuttlecraft',
-
-				)
+			)
 		);
 
 		shopp_add_product($args);
@@ -74,6 +74,7 @@ class TaxTests extends ShoppTestCase {
 		$args = array(
 			'name' => 'Command Uniform',
 			'publish' => array('flag' => true),
+			'categories'=> array('terms' => array($Uniforms)),
 			'specs' => array(
 				'Department' => 'Command',
 				'Color' => 'Gold'
@@ -164,9 +165,9 @@ class TaxTests extends ShoppTestCase {
 		parent::setUp();
 		self::resetTests();
 
-        remove_all_actions('shopp_calculate_shipping_init');
-        remove_all_actions('shopp_calculate_item_shipping');
-        remove_all_actions('shopp_calculate_shipping');
+		remove_all_actions('shopp_calculate_shipping_init');
+		remove_all_actions('shopp_calculate_item_shipping');
+		remove_all_actions('shopp_calculate_shipping');
 
 
 		$shippingrates = array(
@@ -177,31 +178,32 @@ class TaxTests extends ShoppTestCase {
 			'table' => array(
 				0 => array(
 					'destination' => '*',
-	                'rate' => 10.00
+					'rate' => 10.00
 				),
 			)
 		);
 
-        $Shopp = Shopp::object();
+		$Shopp = Shopp::object();
 
 		shopp_set_setting('ItemRates-0', serialize($shippingrates));
-    	shopp_set_setting('active_shipping',array(
-    		'ItemRates' => array( 0 => true )
-    	));
+		shopp_set_setting('active_shipping',array(
+			'ItemRates' => array( 0 => true )
+		));
 		$Shopp->Shipping->active = array();
-        $Shopp->Shipping->activated();
-        $Shopp->Shipping->load();
+		$Shopp->Shipping->activated();
+		$Shopp->Shipping->load();
 	}
 
-    private function number ($amount) {
+	private function number ($amount) {
 		return Shopp::numeric_format(abs($amount), 2, '.', '', 3);
-    }
+	}
 
 	function test_eu_overlap_settings () {
+		$Order = ShoppOrder();
 
 		ShoppBaseLocale()->save('FR');
 		shopp_set_setting('tax_inclusive', 'on');
-		shopp_set_setting('tax_shipping', 'on');
+		shopp_set_setting('tax_shipping', 'off');
 
 		$taxrates = array(
 			array(
@@ -217,34 +219,45 @@ class TaxTests extends ShoppTestCase {
 				'country' => 'DE',
 				'logic' => 'any',
 				'haslocals' => false
+			),
+			array(
+				'rate' => '10%',
+				'compound' => 'off',
+				'country' => 'FR',
+				'logic' => 'any',
+				'rules' => array(
+					array(
+						'p' => 'product-category',
+						'v' => 'Uniforms'
+					)
+				),
+				'haslocals' => false
 			)
 		);
 		shopp_set_setting('taxrates', serialize($taxrates));
 
-		$ShoppTax = new ShoppTax();
+		$Product = shopp_product('command-uniform', 'slug');
+		shopp_add_cart_product($Product->id, 1);
 
-		$Billing = new BillingAddress();
+		$Items = shopp_cart_items();
+		$Item = reset($Items);
 
-		$Billing->country = 'GB';
-		$ShoppTax->address($Billing);
-		$settings = $ShoppTax->settings();
-		$eusetting = reset($settings);
+		$data = array('country' => 'FR');
+		$Order->Billing->updates($data);
+		$Order->Shipping->updates($data);
+		$Order->locate();
 
-		$this->assertEquals(1, count($settings), 'Expected one tax rate setting for UK');
-		$this->assertEquals('EUVAT', $eusetting['country'], 'Expected one tax rate setting for UK');
+		$Totals = $Order->Cart->totals();
 
-		$Billing->country = 'FJ';
-		$ShoppTax->address($Billing);
-		$settings = $ShoppTax->settings();
-		$this->assertEquals(0, count($settings), 'Expected no matching tax rate settings for Fiji');
+		// Item Pricing
+		$this->assertEquals('100.00', $this->number($Item->unitprice), 'Cart line item unit price:');
+		$this->assertEquals('100.00', $this->number($Item->total), 'Cart line item total:');
 
-		$Billing->country = 'DE';
-		$ShoppTax->address($Billing);
-		$settings = $ShoppTax->settings();
-		$eusetting = reset($settings);
-
-		$this->assertEquals(1, count($settings), 'Expected one tax rate setting for Germany');
-		$this->assertEquals('DE', $eusetting['country'], 'Expected one tax rate setting for Germany');
+		// Cart totals
+		$this->assertEquals('100.00', $this->number($Totals->total('order')), 'Cart order amount:');
+		$this->assertEquals('10.00', $this->number($Totals->total('shipping')), 'Cart shipping amount:');
+		$this->assertEquals('9.09', $this->number($Totals->total('tax')), 'Cart tax amount:');
+		$this->assertEquals('110.00', $this->number($Totals->total('total')), 'Cart total amount:');
 
 	}
 
@@ -288,10 +301,9 @@ class TaxTests extends ShoppTestCase {
 	 * Finally the location changes outside of EU VAT.
 	 **/
 	function test_vat_scenario1 () {
-		//$this->markTestSkipped('Not ready yet.');
+		//$this->markTestSkipped('Skipped');
 
 		$Order = ShoppOrder();
-        $Shopp = Shopp::object();
 
 		ShoppBaseLocale()->save('FR');
 
@@ -320,13 +332,13 @@ class TaxTests extends ShoppTestCase {
 		shopp_add_cart_product($Product->id, 1);
 
 		$Items = shopp_cart_items();
-        $Item = reset($Items);
+		$Item = reset($Items);
 		$itemkey = key($Items); // Reliably obtain the itemkey
 
 		$addons = shopp_product_addons($Product->id);
 		$addon = array_shift($addons); // First available addon
 
-        shopp_add_cart_item_addon($itemkey, $addon->id);
+		shopp_add_cart_item_addon($itemkey, $addon->id);
 
 		$data = array('country' => 'GB');
 		$Order->Billing->updates($data);
@@ -335,15 +347,15 @@ class TaxTests extends ShoppTestCase {
 
 		$Totals = $Order->Cart->totals();
 
-        // Item Pricing
-		$this->assertEquals(110, $Item->unitprice, 'Cart line item unit price:');
-        $this->assertEquals(110, $Item->total, 'Cart line item total:');
+		// Item Pricing
+		$this->assertEquals('110.00', $this->number($Item->unitprice), 'Cart line item unit price:');
+		$this->assertEquals('110.00', $this->number($Item->total), 'Cart line item total:');
 
-        // Cart totals
-		$this->assertEquals(110, $Totals->total('order'), 'Cart order amount:');
-		$this->assertEquals(10, $Totals->total('shipping'), 'Cart shipping amount:');
-		$this->assertEquals(20, $Totals->total('tax'), 'Cart tax amount:');
-		$this->assertEquals(120.00, $Totals->total('total'), 'Cart total amount:');
+		// Cart totals
+		$this->assertEquals('110.00', $this->number($Totals->total('order')), 'Cart order amount:');
+		$this->assertEquals('10.00', $this->number($Totals->total('shipping')), 'Cart shipping amount:');
+		$this->assertEquals('20.00', $this->number($Totals->total('tax')), 'Cart tax amount:');
+		$this->assertEquals('120.00', $this->number($Totals->total('total')), 'Cart total amount:');
 
 		$data = array('country' => 'DE');
 
@@ -352,12 +364,12 @@ class TaxTests extends ShoppTestCase {
 		$Order->locate();
 
 		$Totals = $Order->Cart->totals();
-
-        // Item Pricing
+		
+		// Item Pricing
 		$this->assertEquals('109.08', $this->number($Item->unitprice), 'Cart line item unit price:');
-        $this->assertEquals('109.08', $this->number($Item->total), 'Cart line item total:');
+		$this->assertEquals('109.08', $this->number($Item->total), 'Cart line item total:');
 
-        // Cart totals
+		// Cart totals
 		$this->assertEquals('109.08', $this->number($Totals->total('order')), 'Cart order amount:');
 		$this->assertEquals('10.00', $this->number($Totals->total('shipping')), 'Cart shipping amount:');
 		$this->assertEquals('19.16', $this->number($Totals->total('tax')), 'Cart tax amount:');
@@ -371,14 +383,14 @@ class TaxTests extends ShoppTestCase {
 
 		$Totals = $Order->Cart->totals();
 
-        $Items = shopp_cart_items();
-        $Item = reset($Items);
+		$Items = shopp_cart_items();
+		$Item = reset($Items);
 
-        // Item Pricing
+		// Item Pricing
 		$this->assertEquals('91.67', $this->number($Item->unitprice), 'Cart line item unit price:');
-        $this->assertEquals('91.67', $this->number($Item->total), 'Cart line item total:');
+		$this->assertEquals('91.67', $this->number($Item->total), 'Cart line item total:');
 
-        // Cart totals
+		// Cart totals
 		$this->assertEquals('91.67', $this->number($Totals->total('order')), 'Cart order amount:');
 		$this->assertEquals('10.00', $this->number($Totals->total('shipping')), 'Cart shipping amount:');
 		$this->assertEquals('0', $this->number($Totals->total('tax')), 'Cart tax amount:');

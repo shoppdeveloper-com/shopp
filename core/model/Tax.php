@@ -47,7 +47,8 @@ class ShoppTax {
 	 * @return void
 	 **/
 	public function item ( $Item ) {
-		return new ShoppTaxableItem($Item);
+        $this->Item = is_a($Item, 'ShoppTaxableItem') ? $Item : new ShoppTaxableItem($Item);
+        return $this->Item;
 	}
 
 	/**
@@ -197,7 +198,6 @@ class ShoppTax {
 
 		$apply = false;
 		$matches = 0;
-
 		foreach ( $rules as $rule ) {
 			$match = false;
 			if ( is_a($this->Item, 'ShoppTaxableItem') && false !== strpos($rule['p'],'product') ) {
@@ -325,7 +325,7 @@ class ShoppTax {
 
 		$baserate = isset($baserate->rate) ? $baserate->rate : 0;
 		$appliedrate = isset($appliedrate->rate) ? $appliedrate->rate : 0;
-
+        
 		if ( $baserate == $appliedrate )
 			return 0;
 

@@ -482,7 +482,6 @@ class ShoppCart extends ListFramework {
 	 * @author Jonathan Davis
 	 * @since 1.0
 	 *
-	 * @fixme foreach over iterable items prevents addons from being added via cart API
 	 * @param int $item Index of the item to change
 	 * @param ShoppProduct $Product Product object to change to
 	 * @param int|array|Price $pricing Price record ID or an array of pricing record IDs or a Price object
@@ -500,11 +499,20 @@ class ShoppCart extends ListFramework {
 
 		// Maintain item state, change variant
 		$Item = $this->get($item);
+        
+        // Remove old item taxes from the cart tax total register
+        $ItemTax = reset($Item->taxes);
+        $TaxTotals = $this->Totals->entry(OrderAmountItemTax::$register, $ItemTax->label);
+        if ($TaxTotals)
+            $TaxTotals->unapply($item);
+        
 		$category = $Item->category;
 		$data = $Item->data;
 
 		$Item->load(new ShoppProduct($product), $pricing, $category, $data, $addons);
 		ShoppOrder()->Shiprates->item( new ShoppShippableItem($Item) );
+
+        $this->add($Item->fingerprint(), $Item);
 
 		return true;
 	}
@@ -555,6 +563,8 @@ class ShoppCart extends ListFramework {
 	public function itemtaxes ( ShoppCartItem $Item ) {
 
 		$itemid = $Item->fingerprint();
+        if ( ! $this->exists($itemid) ) return;
+
 		foreach ( $Item->taxes as $id => &$ItemTax )
 			$this->Totals->register( new OrderAmountItemTax( $ItemTax, $itemid ) );
 
