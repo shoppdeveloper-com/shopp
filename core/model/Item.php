@@ -430,8 +430,9 @@ class ShoppCartItem {
 
 			$selected = '';
 			if ( $selection == $option->id ) $selected = ' selected="selected"';
+
 			$disabled = '';
-			if ( Shopp::str_true($option->inventory) && $option->stock < $this->quantity )
+			if ( Shopp::str_true($option->inventory) && $option->stock < $this->quantity && ! shopp_setting_enabled('backorders') )
 				$disabled = ' disabled="disabled"';
 
 			$string .= '<option value="' . $option->id . '"' . $selected . $disabled . '>' . $option->label . $price . '</option>';
