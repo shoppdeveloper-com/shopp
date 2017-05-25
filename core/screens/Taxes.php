@@ -174,7 +174,7 @@ class ShoppScreenTaxes extends ShoppSettingsScreenController {
 
 			if ( '*' != $rate['country'] ) $score++;
 
-			$score += $rate['rate'] / 100;
+			$score += (float)$rate['rate'] / 100;
 		}
 
 		if ( $scoring['a'] == $scoring['b'] ) return 0;
