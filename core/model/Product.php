@@ -106,7 +106,7 @@ class ShoppProduct extends WPShoppObject {
 	 **/
 	public function savepost () {
 		if ( empty($this->id)) return;
-		do_action('save_post', $this->id, get_post($this->id));
+		do_action('save_post', $this->id, get_post($this->id), $update = true);
 		if( function_exists('clean_post_cache') )
 			clean_post_cache($this->id);
 	}
