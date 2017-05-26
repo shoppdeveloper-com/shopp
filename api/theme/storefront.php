@@ -375,7 +375,10 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 	 * @return string The business name
 	 **/
 	public static function business_name ( $result, $options, $O ) {
-		return esc_html(shopp_setting('business_name'));
+        $name = shopp_setting('business_name');
+        if ( empty($name) )
+            $name = get_bloginfo('name');
+		return esc_html($name);
 	}
 
 	/**
