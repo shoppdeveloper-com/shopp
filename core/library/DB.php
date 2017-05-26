@@ -1189,6 +1189,7 @@ abstract class ShoppDatabaseObject implements Iterator {
 		}
 
 		// Update record
+        unset($data['id']);
 		$dataset = ShoppDatabaseObject::dataset($data);
 		sDB::query("UPDATE $this->_table SET $dataset WHERE $this->_key='$id'");
 
