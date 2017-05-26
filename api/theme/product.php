@@ -151,10 +151,10 @@ class ShoppProductThemeAPI implements ShoppAPI {
 	 * @param string       $context The context being worked on by the Theme API
 	 * @return ShoppProduct The active object context
 	 **/
-	public static function _setobject ($Object, $object) {
+	public static function _setobject ($Object, $context) {
 		if ( is_object($Object) && is_a($Object, 'ShoppProduct') ) return $Object;
 
-		if ( strtolower($object) != 'product' ) return $Object; // not mine, do nothing
+		if ( strtolower($context) != 'product' ) return $Object; // not mine, do nothing
 		else {
 			return ShoppProduct();
 		}
