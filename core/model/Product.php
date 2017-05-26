@@ -80,6 +80,8 @@ class ShoppProduct extends WPShoppObject {
 		if ( isset($this->_map[ $key ]) ) $key = $this->_map[ $key ];
 		$this->init(self::$table, $key);
 		$this->type = self::$posttype;
+        $this->ping_status = get_option('default_ping_status');
+        $this->comment_status = get_option('default_comment_status');
 		$this->load($id, $key);
 	}
 
