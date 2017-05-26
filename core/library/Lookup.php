@@ -557,6 +557,11 @@ class ShoppLookup {
 			'admin' => __('For help with this, contact the website administrator.','Shopp'),
 		);
 
+        /* AJAX and Resource errors */
+        $_['access'] = array(
+            '403' => Shopp::__('You are not authorized to access this resource.')
+        );
+
 		/* PHP file upload errors */
 		$_['uploads'] = array(
 			UPLOAD_ERR_INI_SIZE => sprintf(
