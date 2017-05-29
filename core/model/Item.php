@@ -960,7 +960,7 @@ class ShoppCartItem {
 		$taxableqty = ( $this->bogof && $this->bogof != $this->quantity ) ? $this->quantity - $this->bogof : $this->quantity;
 
 		$Tax->rates($this->taxes, $Tax->item($this));
-		$this->unittax = ShoppTax::calculate($this->taxes, $taxable);
+		$this->unittax = ShoppTax::calculate($this->taxes, $taxable, $Tax->item($this));
 		$this->tax = $Tax->total($this->taxes, (int) $taxableqty);
 
 		// Handle inclusive tax price adjustments for non-EU markets or alternate tax rate markets
