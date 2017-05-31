@@ -378,7 +378,7 @@ class ShoppTax {
 	 * @param float $taxable The amount to calculate taxes on
 	 * @return float The total tax amount
 	 **/
-	public static function calculate ( array &$rates, $taxable, $Item = null ) {
+	public static function calculate ( array &$rates, $taxable ) {
 		$compound = $taxable;
 		$total = 0;
 		$inclusive = shopp_setting_enabled('tax_inclusive');
@@ -389,16 +389,9 @@ class ShoppTax {
 			$taxrate->amount = 0; // Reset the captured tax amount @see Issue #2430
 
 			// Calculate tax amount
-			if ( $inclusive ) {
-				$baserates = ShoppTax::baserates($Item);
-				$baserate = reset($baserates);
-				$baserate = isset($baserate->rate) ? $baserate->rate : 0;
-				$tax = ( $taxable / (1 + $baserate) ) * $taxrate->rate;
-			} else {
-				$tax = self::tax($taxable, $taxrate->rate);
-			}
+			$tax = self::tax($taxable, $taxrate->rate);
 
-			if ( 'on' == $taxrate->compound ) {
+			if ( Shopp::str_true($taxrate->compound) ) {
 				$tax = self::tax($compound, $taxrate->rate);
 				$compound += $tax;						 	// Set compound taxable amount for next compound rate
 			}
