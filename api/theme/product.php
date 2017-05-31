@@ -2454,7 +2454,7 @@ new ProductOptionsMenus(<?php printf("'select%s.product%d.options'",$select_coll
 		}
         
 		if ( $inclusivetax )
-			$amount += ShoppTax::adjustment($amount, $taxrates, $O);
+			$amount = ShoppTax::adjustment($amount, $taxrates, $O);
 
 		return $amount;
 	}
