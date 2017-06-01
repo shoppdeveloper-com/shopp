@@ -138,7 +138,9 @@ class ShoppAjax {
 		$Category = new ProductCategory((int)$_GET['category']);
 		$Category->load_meta();
 
-		echo json_encode($Category->specs);
+		if ( isset($Category->specs) )
+			echo json_encode($Category->specs);
+		else echo json_encode(false);
 		exit();
 	}
 
@@ -149,8 +151,8 @@ class ShoppAjax {
 		$Category->load_meta();
 
 		$result = new stdClass();
-		$result->options = $Category->options;
-		$result->prices = $Category->prices;
+		$result->options = isset($Category->options) ? $Category->options : array();
+		$result->prices = isset($Category->prices) ? $Category->prices : array();
 
 		echo json_encode($result);
 		exit();

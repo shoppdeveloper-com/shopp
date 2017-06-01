@@ -1189,6 +1189,7 @@ abstract class ShoppDatabaseObject implements Iterator {
 		}
 
 		// Update record
+        unset($data['id']);
 		$dataset = ShoppDatabaseObject::dataset($data);
 		sDB::query("UPDATE $this->_table SET $dataset WHERE $this->_key='$id'");
 
@@ -1520,7 +1521,7 @@ class WPDatabaseObject extends ShoppDatabaseObject {
 	 **/
 	function save () {
 		parent::save();
-		do_action('save_post',$this->id,get_post($this->id));
+		do_action('save_post', $this->id, get_post($this->id), $update = true);
 	}
 
 }

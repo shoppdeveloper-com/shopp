@@ -108,10 +108,10 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 	 * @param string          $context The context being worked on by the Theme API
 	 * @return ShoppStorefront The active object context
 	 **/
-	public static function _setobject ( $Object, $object ) {
+	public static function _setobject ( $Object, $context ) {
 		if ( is_object($Object) && is_a($Object, 'ShoppCatalog') ) return $Object;
 
-		switch ( strtolower($object) ) {
+		switch ( strtolower($context) ) {
 			case 'storefront':
 			case 'catalog':
 				return ShoppCatalog();
@@ -375,7 +375,10 @@ class ShoppStorefrontThemeAPI implements ShoppAPI {
 	 * @return string The business name
 	 **/
 	public static function business_name ( $result, $options, $O ) {
-		return esc_html(shopp_setting('business_name'));
+        $name = shopp_setting('business_name');
+        if ( empty($name) )
+            $name = get_bloginfo('name');
+		return esc_html($name);
 	}
 
 	/**

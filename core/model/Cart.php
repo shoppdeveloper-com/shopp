@@ -512,7 +512,7 @@ class ShoppCart extends ListFramework {
 		$Item->load(new ShoppProduct($product), $pricing, $category, $data, $addons);
 		ShoppOrder()->Shiprates->item( new ShoppShippableItem($Item) );
 
-        $this->add($Item->fingerprint(), $Item);
+        $this->move($item, $Item->fingerprint());
 
 		return true;
 	}

@@ -151,10 +151,10 @@ class ShoppProductThemeAPI implements ShoppAPI {
 	 * @param string       $context The context being worked on by the Theme API
 	 * @return ShoppProduct The active object context
 	 **/
-	public static function _setobject ($Object, $object) {
+	public static function _setobject ($Object, $context) {
 		if ( is_object($Object) && is_a($Object, 'ShoppProduct') ) return $Object;
 
-		if ( strtolower($object) != 'product' ) return $Object; // not mine, do nothing
+		if ( strtolower($context) != 'product' ) return $Object; // not mine, do nothing
 		else {
 			return ShoppProduct();
 		}
@@ -375,7 +375,10 @@ class ShoppProductThemeAPI implements ShoppAPI {
 				if ( ! empty($before_menu) ) $markup[] = $before_menu;
 				$menuid = $idprefix . $menu['id'];
 				if ( Shopp::str_true($label) ) $markup[] = '<label for="' . esc_attr($menuid) . '">' . esc_html($menu['name']) . '</label> ';
-				$category_class = shopp('collection', 'get-slug');
+
+				$category_slug = array_column($O->categories, 'slug');
+                
+                $category_class = implode(' ', $category_slug);
 				$classes = array($class, $category_class, 'addons');
 
 				$markup[] = '<select name="products[' . $O->id . '][addons][]" class="' . trim(join(' ', $classes)). '" id="' . esc_attr($menuid) . '" title="' . esc_attr($menu['name']) . '">';
